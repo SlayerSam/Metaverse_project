@@ -1,9 +1,8 @@
-import Home from "@/components/home";
 
 export default function App() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Home />
+    <main className="flex flex-col items-center justify-between">
+      Home Page
     </main>
   );
 }
