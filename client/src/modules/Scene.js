@@ -2,7 +2,7 @@
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { useRef, useEffect, forwardRef } from 'react';
-import { useGLTF, useAnimations } from '@react-three/drei';
+import { useGLTF, useAnimations, OrbitControls } from '@react-three/drei';
 
 const Avatar = forwardRef(({ url }, ref) => {
     const avatarRef = ref || useRef(); // Use the forwarded ref or create a new one
@@ -97,6 +97,7 @@ const GameScene = () => {
             <Camera avatarRef={avatarRef} />
             {/* <Base url="/models/metaverse.glb" /> */}
             <Avatar url="/models/Avatar.glb" ref={avatarRef} />
+            <OrbitControls />
         </Canvas>
     );
 };
