@@ -1,85 +1,29 @@
 'use client';
-import { Canvas, useFrame, useLoader } from '@react-three/fiber';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { useRef, useEffect, forwardRef } from 'react';
-import { useGLTF, useAnimations, OrbitControls } from '@react-three/drei';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { useRef, useState } from 'react';
+import { useGLTF, OrthographicCamera, OrbitControls } from '@react-three/drei';
+import { Avatar } from './Avatar';
 
-const Avatar = forwardRef(({ url }, ref) => {
-    const avatarRef = ref || useRef(); // Use the forwarded ref or create a new one
-    const { scene, animations } = useGLTF(url);
-    const { actions } = useAnimations(animations, avatarRef);
-
-    // Control the avatar
-    const keys = {};
-    const speed = 0.1;
-
-    // Handle keyboard events
-    const handleKeyDown = (event) => {
-        keys[event.code] = true;
-    };
-
-    const handleKeyUp = (event) => {
-        keys[event.code] = false;
-    };
-
-    useFrame(() => {
-        let isMoving = false;
-
-        // Check for movement keys
-        if (keys['ArrowUp'] || keys['KeyW']) {
-            avatarRef.current.position.z -= speed;
-            isMoving = true;
-        }
-        if (keys['ArrowDown'] || keys['KeyS']) {
-            avatarRef.current.position.z += speed;
-            isMoving = true;
-        }
-        if (keys['ArrowLeft'] || keys['KeyA']) {
-            avatarRef.current.position.x -= speed;
-            isMoving = true;
-        }
-        if (keys['ArrowRight'] || keys['KeyD']) {
-            avatarRef.current.position.x += speed;
-            isMoving = true;
-        }
-
-        // Play animations based on movement state
-        if (isMoving) {
-            actions['Walking']?.play(); // Play walking animation
-            actions['Rest']?.stop(); // Ensure pose is not active
-        } else {
-            actions['Walking']?.stop(); // Stop walking animation
-            actions['Rest']?.play(); // Always play pose when idle
-        }
-    });
-
-    // Add event listeners
-    useEffect(() => {
-        window.addEventListener('keydown', handleKeyDown);
-        window.addEventListener('keyup', handleKeyUp);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-            window.removeEventListener('keyup', handleKeyUp);
-        };
-    }, []);
-
-    return <primitive object={scene} ref={avatarRef} />;
-});
-
-const Camera = ({ avatarRef }) => {
-    const cameraRef = useRef();
-
-    useFrame(() => {
+const Camera = ({ avatarRef, isOrthographic }) => {
+    useFrame((state) => {
+        const camera = state.camera;
         if (avatarRef.current) {
-            // Set camera position relative to the avatar
-            cameraRef.current.position.x = avatarRef.current.position.x;
-            cameraRef.current.position.y = avatarRef.current.position.y + 1; // Slightly above the avatar
-            cameraRef.current.position.z = avatarRef.current.position.z + 3; // Behind the avatar
-            cameraRef.current.lookAt(avatarRef.current.position);
+            const avatarPosition = avatarRef.current.position.clone();
+
+            if (isOrthographic) {
+                camera.position.copy(avatarPosition);
+                camera.position.z -= 5; // Set a fixed distance behind the avatar
+                camera.lookAt(avatarRef.current.position);
+
+            } else {
+                camera.position.copy(avatarPosition);
+                camera.position.z -= 2;
+                camera.position.y += 3;
+                camera.position.x = avatarPosition.x;
+                camera.lookAt(avatarRef.current.position);
+            }
         }
     });
-
-    return <perspectiveCamera ref={cameraRef} fov={75} position={[0, 1, 3]} />;
 };
 
 const Base = ({ url }) => {
@@ -87,19 +31,42 @@ const Base = ({ url }) => {
     return <primitive object={base.scene} />;
 };
 
-const GameScene = () => {
+export default function Scene() {
     const avatarRef = useRef();
+    const [isOrthographic, setIsOrthographic] = useState(false);
+
+    const toggleCamera = () => {
+        setIsOrthographic(!isOrthographic);
+    };
 
     return (
-        <Canvas className="w-full h-screen">
-            <ambientLight />
-            <pointLight position={[10, 10, 10]} />
-            <Camera avatarRef={avatarRef} />
-            {/* <Base url="/models/metaverse.glb" /> */}
-            <Avatar url="/models/Avatar.glb" ref={avatarRef} />
-            <OrbitControls />
-        </Canvas>
+        <>
+            <Canvas>
+                {isOrthographic ? (
+                    <OrthographicCamera
+                        makeDefault
+                        zoom={50}
+                        near={0.1}
+                        far={1000}
+                        rotation={[-Math.PI / 4, Math.PI / 4, 0]}
+                    />
+                ) : (
+                    <perspectiveCamera
+                        makeDefault
+                        fov={75}
+                        near={0.1}
+                        far={1000}
+                    />
+                )}
+                <OrbitControls />
+                <ambientLight intensity={0.5} />
+                <pointLight position={[10, 10, 10]} />
+                <Base url={'/models/base.glb'} />
+                <Avatar group={avatarRef} />
+            </Canvas>
+            <button onClick={toggleCamera} style={{ position: 'absolute', top: '10px', left: '10px' }}>
+                Toggle Camera
+            </button>
+        </>
     );
-};
-
-export default GameScene;
+}

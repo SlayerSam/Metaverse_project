@@ -1,4 +1,4 @@
-// 'use client'
+'use client'
 // import { Canvas, useFrame } from '@react-three/fiber'
 // import { OrbitControls, FirstPersonControls, useGLTF, useAnimations } from '@react-three/drei'
 // import { Suspense, useRef, useState, useEffect } from 'react'
@@ -172,13 +172,13 @@
 // }
 
 
-import GameScene from '@/modules/Scene'
+import Scene from '@/modules/Scene'
 import React from 'react'
 
 export default function page() {
   return (
-    <div className='w-full h-screen'>
-      <GameScene />
+    <div className='w-full h-screen bg-sky-300'>
+      <Scene />
     </div>
   )
 }
