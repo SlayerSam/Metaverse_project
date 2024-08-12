@@ -6,7 +6,6 @@ import * as THREE from 'three'
 export function Avatar({ group }) {
     const { nodes, materials, animations } = useGLTF('/models/Avatar.glb')
     const { actions } = useAnimations(animations, group)
-    const [isClick, setClick] = useState(false)
     const [keys, setKeys] = useState({})
 
     const speed = 0.1
@@ -20,13 +19,18 @@ export function Avatar({ group }) {
         setKeys((prevKeys) => ({ ...prevKeys, [event.code]: false }))
     }
 
-    useFrame(() => {
-        console.log(group.current.position)
-        let isMoving = false
+    useFrame((state) => {
+        let isMoving = false;
         const direction = new THREE.Vector3();
+        const camera = state.camera;
+
+
+        const head = group.current.getObjectByName('Head');
+        console.log(head)
         group.current.getWorldDirection(direction);
-        direction.y = 0; // Keep the movement on the ground plane
-        direction.normalize()
+        direction.y = 0;
+        direction.normalize();
+
         if (keys['ArrowUp'] || keys['KeyW']) {
             group.current.position.add(direction.clone().multiplyScalar(speed));
             isMoving = true;
@@ -39,22 +43,22 @@ export function Avatar({ group }) {
 
         if (keys['ArrowLeft'] || keys['KeyA']) {
             group.current.rotation.y += rotationSpeed;
-            isMoving = true
+            isMoving = true;
         }
 
         if (keys['ArrowRight'] || keys['KeyD']) {
             group.current.rotation.y -= rotationSpeed;
-            isMoving = true
+            isMoving = true;
         }
 
         if (isMoving) {
-            actions['Walking']?.play()
-            actions['Rest']?.stop()
+            actions['Walking']?.play();
+            actions['Rest']?.stop();
         } else {
-            actions['Walking']?.stop()
-            actions['Rest']?.play()
+            actions['Walking']?.stop();
+            actions['Rest']?.play();
         }
-    })
+    });
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeyDown);
@@ -63,7 +67,7 @@ export function Avatar({ group }) {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
         };
-    }, [isClick]);
+    }, []);
     return (
         <group ref={group} dispose={null}>
             <group name="Scene">
@@ -90,760 +94,762 @@ export function Avatar({ group }) {
                 </group>
                 <group
                     name="WGT-rig_spine_fk"
-                    position={[0, 1.78, -0.04]}
-                    rotation={[1.82, 0, 0]}
-                    scale={0.26}
+                    position={[0, 1.784, -0.036]}
+                    rotation={[1.823, 0, 0]}
+                    scale={0.256}
                 />
                 <group
                     name="WGT-rig_spine_fk001"
-                    position={[0, 2.01, -0.01]}
-                    rotation={[1.69, 0, 0]}
+                    position={[0, 2.013, -0.007]}
+                    rotation={[1.694, 0, 0]}
                     scale={0.23}
                 />
                 <group
                     name="WGT-rig_spine_fk002"
-                    position={[0, 2.01, -0.01]}
-                    rotation={[1.54, 0, 0]}
-                    scale={0.29}
+                    position={[0, 2.013, -0.007]}
+                    rotation={[1.539, 0, 0]}
+                    scale={0.291}
                 />
                 <group
                     name="WGT-rig_spine_fk003"
-                    position={[0, 2.3, -0.02]}
-                    rotation={[1.54, 0, 0]}
-                    scale={0.32}
+                    position={[0, 2.304, -0.017]}
+                    rotation={[1.542, 0, 0]}
+                    scale={0.324}
                 />
                 <group
                     name="WGT-rig_tweak_spine"
-                    position={[0, 1.54, -0.1]}
-                    rotation={[1.82, 0, 0]}
-                    scale={0.13}
+                    position={[0, 1.536, -0.1]}
+                    rotation={[1.823, 0, 0]}
+                    scale={0.128}
                 />
                 <group
                     name="WGT-rig_tweak_spine001"
-                    position={[0, 1.78, -0.04]}
-                    rotation={[1.69, 0, 0]}
-                    scale={0.12}
+                    position={[0, 1.784, -0.036]}
+                    rotation={[1.694, 0, 0]}
+                    scale={0.115}
                 />
                 <group
                     name="WGT-rig_tweak_spine002"
-                    position={[0, 2.01, -0.01]}
-                    rotation={[1.54, 0, 0]}
-                    scale={0.15}
+                    position={[0, 2.013, -0.007]}
+                    rotation={[1.539, 0, 0]}
+                    scale={0.146}
                 />
                 <group
                     name="WGT-rig_tweak_spine003"
-                    position={[0, 2.3, -0.02]}
-                    rotation={[1.54, 0, 0]}
-                    scale={0.16}
+                    position={[0, 2.304, -0.017]}
+                    rotation={[1.542, 0, 0]}
+                    scale={0.162}
                 />
                 <group
                     name="WGT-rig_tweak_spine004"
-                    position={[0, 2.63, -0.03]}
-                    rotation={[1.95, 0, 0]}
-                    scale={0.06}
+                    position={[0, 2.628, -0.026]}
+                    rotation={[1.948, 0, 0]}
+                    scale={0.056}
                 />
-                <group name="WGT-rig_torso" position={[0, 1.66, -0.07]} scale={0.66} />
+                <group name="WGT-rig_torso" position={[0, 1.66, -0.068]} scale={0.661} />
                 <group
                     name="WGT-rig_hips"
-                    position={[0, 1.54, -0.1]}
-                    rotation={[1.82, 0, 0]}
-                    scale={0.28}
+                    position={[0, 1.536, -0.1]}
+                    rotation={[1.823, 0, 0]}
+                    scale={0.275}
                 />
                 <group
                     name="WGT-rig_chest"
-                    position={[0, 2.3, -0.02]}
-                    rotation={[1.54, 0, 0]}
-                    scale={0.37}
+                    position={[0, 2.304, -0.017]}
+                    rotation={[1.542, 0, 0]}
+                    scale={0.367}
                 />
                 <group
                     name="WGT-rig_shoulderL"
-                    position={[0.03, 2.54, 0.11]}
-                    rotation={[0, -1.04, 0]}
-                    scale={0.3}
+                    position={[0.031, 2.538, 0.109]}
+                    rotation={[-0.001, -1.039, -0.001]}
+                    scale={0.295}
                 />
                 <group
                     name="WGT-rig_upper_arm_parentL"
-                    position={[0.35, 2.53, -0.07]}
-                    rotation={[0.03, -1.54, -1.49]}
-                    scale={0.12}
+                    position={[0.35, 2.527, -0.069]}
+                    rotation={[0.026, -1.543, -1.486]}
+                    scale={0.119}
                 />
                 <group
                     name="WGT-rig_upper_arm_fkL"
-                    position={[0.35, 2.53, -0.07]}
-                    rotation={[0.03, -1.54, -1.49]}
-                    scale={0.48}
+                    position={[0.35, 2.527, -0.069]}
+                    rotation={[0.026, -1.543, -1.486]}
+                    scale={0.476}
                 />
                 <group
                     name="WGT-rig_forearm_fkL"
-                    position={[0.83, 2.53, -0.08]}
-                    rotation={[3.04, -1.52, 1.53]}
-                    scale={0.42}
+                    position={[0.825, 2.528, -0.082]}
+                    rotation={[3.038, -1.518, 1.526]}
+                    scale={0.423}
                 />
                 <group
                     name="WGT-rig_hand_fkL"
-                    position={[1.25, 2.53, -0.06]}
-                    rotation={[-2.88, -1.41, 1.89]}
-                    scale={0.13}
+                    position={[1.248, 2.53, -0.06]}
+                    rotation={[-2.881, -1.409, 1.887]}
+                    scale={0.135}
                 />
                 <group
                     name="WGT-rig_upper_arm_ikL"
-                    position={[0.35, 2.53, -0.07]}
-                    rotation={[0.03, -1.54, -1.49]}
-                    scale={0.48}
+                    position={[0.35, 2.527, -0.069]}
+                    rotation={[0.026, -1.543, -1.486]}
+                    scale={0.476}
                 />
                 <group
                     name="WGT-rig_upper_arm_ik_targetL"
-                    position={[0.83, 2.47, -0.98]}
-                    rotation={[3.08, 0.01, -0.34]}
-                    scale={0.11}
+                    position={[0.835, 2.474, -0.978]}
+                    rotation={[3.082, 0.01, -0.339]}
+                    scale={0.112}
                 />
                 <group
                     name="WGT-rig_hand_ikL"
-                    position={[1.25, 2.53, -0.06]}
-                    rotation={[-2.88, -1.41, 1.89]}
-                    scale={0.13}
+                    position={[1.248, 2.53, -0.06]}
+                    rotation={[-2.881, -1.409, 1.887]}
+                    scale={0.135}
                 />
                 <group
                     name="WGT-rig_VIS_upper_arm_ik_poleL"
-                    position={[0.83, 2.53, -0.08]}
-                    rotation={[Math.PI / 2, 0, -1.51]}
-                    scale={0.9}
+                    position={[0.825, 2.528, -0.082]}
+                    rotation={[Math.PI / 2, 0, -1.506]}
+                    scale={0.898}
                 />
                 <group
                     name="WGT-rig_upper_arm_tweakL"
-                    position={[0.35, 2.53, -0.07]}
-                    rotation={[0.03, -1.54, -1.49]}
-                    scale={0.12}
+                    position={[0.35, 2.527, -0.069]}
+                    rotation={[0.026, -1.543, -1.486]}
+                    scale={0.119}
                 />
                 <group
                     name="WGT-rig_upper_arm_tweakL001"
-                    position={[0.59, 2.53, -0.08]}
-                    rotation={[0.03, -1.54, -1.49]}
-                    scale={0.12}
+                    position={[0.588, 2.527, -0.075]}
+                    rotation={[0.026, -1.543, -1.486]}
+                    scale={0.119}
                 />
                 <group
                     name="WGT-rig_forearm_tweakL"
-                    position={[0.83, 2.53, -0.08]}
-                    rotation={[3.04, -1.52, 1.53]}
-                    scale={0.11}
+                    position={[0.825, 2.528, -0.082]}
+                    rotation={[3.038, -1.518, 1.526]}
+                    scale={0.106}
                 />
                 <group
                     name="WGT-rig_forearm_tweakL001"
-                    position={[1.04, 2.53, -0.07]}
-                    rotation={[3.04, -1.52, 1.53]}
-                    scale={0.11}
+                    position={[1.037, 2.529, -0.071]}
+                    rotation={[3.038, -1.518, 1.526]}
+                    scale={0.106}
                 />
                 <group
                     name="WGT-rig_hand_tweakL"
-                    position={[1.25, 2.53, -0.06]}
-                    rotation={[-2.88, -1.41, 1.89]}
-                    scale={0.03}
+                    position={[1.248, 2.53, -0.06]}
+                    rotation={[-2.881, -1.409, 1.887]}
+                    scale={0.034}
                 />
                 <group
                     name="WGT-rig_palmL"
-                    position={[1.31, 2.53, -0.09]}
-                    rotation={[0.91, -1.39, 0.77]}
-                    scale={0.1}
+                    position={[1.314, 2.528, -0.091]}
+                    rotation={[0.911, -1.388, 0.774]}
+                    scale={0.101}
                 />
                 <group
                     name="WGT-rig_f_index01L"
-                    position={[1.42, 2.53, 0.02]}
-                    rotation={[-2.25, -1.29, 0.45]}
-                    scale={0.07}
+                    position={[1.42, 2.528, 0.022]}
+                    rotation={[-2.255, -1.292, 0.449]}
+                    scale={0.073}
                 />
                 <group
                     name="WGT-rig_f_index02L"
-                    position={[1.49, 2.51, 0.03]}
-                    rotation={[-1.79, -1.25, 0.89]}
-                    scale={0.05}
+                    position={[1.489, 2.512, 0.035]}
+                    rotation={[-1.791, -1.253, 0.889]}
+                    scale={0.046}
                 />
                 <group
                     name="WGT-rig_f_index03L"
-                    position={[1.53, 2.5, 0.04]}
-                    rotation={[-1.85, -1.12, 0.84]}
-                    scale={0.05}
+                    position={[1.533, 2.498, 0.038]}
+                    rotation={[-1.847, -1.12, 0.837]}
+                    scale={0.052}
                 />
                 <group
                     name="WGT-rig_f_index01L001"
-                    position={[1.58, 2.48, 0.04]}
-                    rotation={[1.29, 1.12, 1.34]}
-                    scale={0.03}
+                    position={[1.58, 2.476, 0.044]}
+                    rotation={[1.294, 1.12, 1.337]}
+                    scale={0.026}
                 />
                 <group
                     name="WGT-rig_f_index01_masterL"
-                    position={[1.42, 2.53, 0.02]}
-                    rotation={[-2.25, -1.29, 0.45]}
-                    scale={0.29}
+                    position={[1.42, 2.528, 0.022]}
+                    rotation={[-2.255, -1.292, 0.449]}
+                    scale={0.285}
                 />
                 <group
                     name="WGT-rig_thumb01L"
-                    position={[1.29, 2.5, -0.01]}
-                    rotation={[-2.67, -0.62, -1.02]}
-                    scale={0.05}
+                    position={[1.29, 2.504, -0.005]}
+                    rotation={[-2.67, -0.616, -1.025]}
+                    scale={0.054}
                 />
                 <group
                     name="WGT-rig_thumb02L"
-                    position={[1.32, 2.48, 0.03]}
-                    rotation={[-2.37, -0.86, -0.82]}
-                    scale={0.06}
+                    position={[1.321, 2.484, 0.034]}
+                    rotation={[-2.371, -0.857, -0.816]}
+                    scale={0.058}
                 />
                 <group
                     name="WGT-rig_thumb03L"
-                    position={[1.37, 2.46, 0.06]}
-                    rotation={[-2.23, -1.02, -0.7]}
-                    scale={0.07}
+                    position={[1.365, 2.457, 0.061]}
+                    rotation={[-2.234, -1.019, -0.704]}
+                    scale={0.066}
                 />
                 <group
                     name="WGT-rig_thumb01L001"
-                    position={[1.42, 2.43, 0.08]}
-                    rotation={[0.91, 1.02, 0.47]}
-                    scale={0.03}
+                    position={[1.422, 2.43, 0.082]}
+                    rotation={[0.908, 1.019, 0.469]}
+                    scale={0.033}
                 />
                 <group
                     name="WGT-rig_thumb01_masterL"
-                    position={[1.29, 2.5, -0.01]}
-                    rotation={[-2.67, -0.62, -1.02]}
-                    scale={0.27}
+                    position={[1.29, 2.504, -0.005]}
+                    rotation={[-2.67, -0.616, -1.025]}
+                    scale={0.272}
                 />
                 <group
                     name="WGT-rig_f_middle01L"
-                    position={[1.44, 2.54, -0.02]}
-                    rotation={[-1.96, -1.32, -3.08]}
-                    scale={0.07}
+                    position={[1.435, 2.537, -0.024]}
+                    rotation={[-1.958, -1.318, -3.078]}
+                    scale={0.073}
                 />
                 <group
                     name="WGT-rig_f_middle02L"
-                    position={[1.51, 2.52, -0.02]}
-                    rotation={[-1.88, -1.33, -3]}
-                    scale={0.05}
+                    position={[1.506, 2.52, -0.017]}
+                    rotation={[-1.882, -1.332, -3.005]}
+                    scale={0.046}
                 />
                 <group
                     name="WGT-rig_f_middle03L"
-                    position={[1.55, 2.51, -0.01]}
-                    rotation={[-2.25, -1.3, 2.92]}
-                    scale={0.05}
+                    position={[1.55, 2.51, -0.014]}
+                    rotation={[-2.248, -1.295, 2.924]}
+                    scale={0.046}
                 />
                 <group
                     name="WGT-rig_f_middle01L001"
-                    position={[1.59, 2.5, -0.01]}
-                    rotation={[0.89, 1.3, -2.04]}
-                    scale={0.02}
+                    position={[1.594, 2.5, -0.006]}
+                    rotation={[0.893, 1.295, -2.042]}
+                    scale={0.023}
                 />
                 <group
                     name="WGT-rig_f_middle01_masterL"
-                    position={[1.44, 2.54, -0.02]}
-                    rotation={[-1.96, -1.32, -3.08]}
-                    scale={0.28}
+                    position={[1.435, 2.537, -0.024]}
+                    rotation={[-1.958, -1.318, -3.078]}
+                    scale={0.278}
                 />
                 <group
                     name="WGT-rig_f_ring01L"
-                    position={[1.44, 2.53, -0.06]}
-                    rotation={[-1.3, -1.34, 2.28]}
-                    scale={0.05}
+                    position={[1.443, 2.533, -0.063]}
+                    rotation={[-1.299, -1.343, 2.275]}
+                    scale={0.049}
                 />
                 <group
                     name="WGT-rig_f_ring02L"
-                    position={[1.49, 2.52, -0.07]}
-                    rotation={[-1.52, -1.32, 2.06]}
-                    scale={0.05}
+                    position={[1.49, 2.522, -0.066]}
+                    rotation={[-1.524, -1.317, 2.057]}
+                    scale={0.046}
                 />
                 <group
                     name="WGT-rig_f_ring03L"
-                    position={[1.53, 2.51, -0.07]}
-                    rotation={[-1.51, -1.2, 2.07]}
-                    scale={0.04}
+                    position={[1.535, 2.511, -0.067]}
+                    rotation={[-1.506, -1.2, 2.075]}
+                    scale={0.044}
                 />
                 <group
                     name="WGT-rig_f_ring01L001"
-                    position={[1.58, 2.49, -0.07]}
-                    rotation={[1.64, 1.2, 1.95]}
-                    scale={0.02}
+                    position={[1.576, 2.495, -0.068]}
+                    rotation={[1.636, 1.2, 1.954]}
+                    scale={0.022}
                 />
                 <group
                     name="WGT-rig_f_ring01_masterL"
-                    position={[1.44, 2.53, -0.06]}
-                    rotation={[-1.3, -1.34, 2.28]}
-                    scale={0.22}
+                    position={[1.443, 2.533, -0.063]}
+                    rotation={[-1.299, -1.343, 2.275]}
+                    scale={0.222}
                 />
                 <group
                     name="WGT-rig_f_pinky01L"
-                    position={[1.42, 2.54, -0.1]}
-                    rotation={[-1.28, -1.34, 1.86]}
-                    scale={0.05}
+                    position={[1.419, 2.542, -0.102]}
+                    rotation={[-1.276, -1.341, 1.856]}
+                    scale={0.047}
                 />
                 <group
                     name="WGT-rig_f_pinky02L"
-                    position={[1.46, 2.53, -0.1]}
-                    rotation={[-1.4, -1.25, 1.74]}
-                    scale={0.04}
+                    position={[1.465, 2.532, -0.105]}
+                    rotation={[-1.401, -1.254, 1.736]}
+                    scale={0.038}
                 />
                 <group
                     name="WGT-rig_f_pinky03L"
-                    position={[1.5, 2.52, -0.11]}
-                    rotation={[-1.43, -1, 1.71]}
-                    scale={0.04}
+                    position={[1.501, 2.521, -0.107]}
+                    rotation={[-1.426, -1.004, 1.713]}
+                    scale={0.036}
                 />
                 <group
                     name="WGT-rig_f_pinky01L001"
-                    position={[1.53, 2.5, -0.11]}
-                    rotation={[1.72, 1, 1.47]}
-                    scale={0.02}
+                    position={[1.532, 2.501, -0.11]}
+                    rotation={[1.716, 1.004, 1.468]}
+                    scale={0.018}
                 />
                 <group
                     name="WGT-rig_f_pinky01_masterL"
-                    position={[1.42, 2.54, -0.1]}
-                    rotation={[-1.28, -1.34, 1.86]}
-                    scale={0.2}
+                    position={[1.419, 2.542, -0.102]}
+                    rotation={[-1.276, -1.341, 1.856]}
+                    scale={0.197}
                 />
                 <group
                     name="WGT-rig_shoulderR"
-                    position={[-0.03, 2.54, 0.11]}
-                    rotation={[3.14, -1.04, 0]}
-                    scale={-0.3}
+                    position={[-0.031, 2.538, 0.109]}
+                    rotation={[3.14, -1.039, -0.001]}
+                    scale={-0.295}
                 />
                 <group
                     name="WGT-rig_upper_arm_parentR"
-                    position={[-0.35, 2.53, -0.07]}
-                    rotation={[-3.12, -1.54, -1.49]}
-                    scale={-0.12}
+                    position={[-0.35, 2.527, -0.069]}
+                    rotation={[-3.116, -1.543, -1.486]}
+                    scale={-0.119}
                 />
                 <group
                     name="WGT-rig_upper_arm_fkR"
-                    position={[-0.35, 2.53, -0.07]}
-                    rotation={[-3.12, -1.54, -1.49]}
-                    scale={-0.48}
+                    position={[-0.35, 2.527, -0.069]}
+                    rotation={[-3.116, -1.543, -1.486]}
+                    scale={-0.476}
                 />
                 <group
                     name="WGT-rig_forearm_fkR"
-                    position={[-0.83, 2.53, -0.08]}
-                    rotation={[-0.1, -1.52, 1.53]}
-                    scale={-0.42}
+                    position={[-0.825, 2.528, -0.082]}
+                    rotation={[-0.104, -1.518, 1.526]}
+                    scale={-0.423}
                 />
                 <group
                     name="WGT-rig_hand_fkR"
-                    position={[-1.25, 2.53, -0.06]}
-                    rotation={[0.26, -1.41, 1.89]}
-                    scale={-0.13}
+                    position={[-1.248, 2.53, -0.06]}
+                    rotation={[0.261, -1.409, 1.887]}
+                    scale={-0.135}
                 />
                 <group
                     name="WGT-rig_upper_arm_ikR"
-                    position={[-0.35, 2.53, -0.07]}
-                    rotation={[-3.12, -1.54, -1.49]}
-                    scale={-0.48}
+                    position={[-0.35, 2.527, -0.069]}
+                    rotation={[-3.116, -1.543, -1.486]}
+                    scale={-0.476}
                 />
                 <group
                     name="WGT-rig_upper_arm_ik_targetR"
-                    position={[-0.83, 2.47, -0.98]}
-                    rotation={[-0.06, 0.01, -0.34]}
-                    scale={-0.11}
+                    position={[-0.835, 2.474, -0.978]}
+                    rotation={[-0.059, 0.01, -0.339]}
+                    scale={-0.112}
                 />
                 <group
                     name="WGT-rig_hand_ikR"
-                    position={[-1.25, 2.53, -0.06]}
-                    rotation={[0.26, -1.41, 1.89]}
-                    scale={-0.13}
+                    position={[-1.248, 2.53, -0.06]}
+                    rotation={[0.261, -1.409, 1.887]}
+                    scale={-0.135}
                 />
                 <group
                     name="WGT-rig_VIS_upper_arm_ik_poleR"
-                    position={[-0.83, 2.53, -0.08]}
-                    rotation={[-Math.PI / 2, 0, -1.51]}
-                    scale={-0.9}
+                    position={[-0.825, 2.528, -0.082]}
+                    rotation={[-Math.PI / 2, 0, -1.506]}
+                    scale={-0.898}
                 />
                 <group
                     name="WGT-rig_upper_arm_tweakR"
-                    position={[-0.35, 2.53, -0.07]}
-                    rotation={[-3.12, -1.54, -1.49]}
-                    scale={-0.12}
+                    position={[-0.35, 2.527, -0.069]}
+                    rotation={[-3.116, -1.543, -1.486]}
+                    scale={-0.119}
                 />
                 <group
                     name="WGT-rig_upper_arm_tweakR001"
-                    position={[-0.59, 2.53, -0.08]}
-                    rotation={[-3.12, -1.54, -1.49]}
-                    scale={-0.12}
+                    position={[-0.588, 2.527, -0.075]}
+                    rotation={[-3.116, -1.543, -1.486]}
+                    scale={-0.119}
                 />
                 <group
                     name="WGT-rig_forearm_tweakR"
-                    position={[-0.83, 2.53, -0.08]}
-                    rotation={[-0.1, -1.52, 1.53]}
-                    scale={-0.11}
+                    position={[-0.825, 2.528, -0.082]}
+                    rotation={[-0.104, -1.518, 1.526]}
+                    scale={-0.106}
                 />
                 <group
                     name="WGT-rig_forearm_tweakR001"
-                    position={[-1.04, 2.53, -0.07]}
-                    rotation={[-0.1, -1.52, 1.53]}
-                    scale={-0.11}
+                    position={[-1.037, 2.529, -0.071]}
+                    rotation={[-0.104, -1.518, 1.526]}
+                    scale={-0.106}
                 />
                 <group
                     name="WGT-rig_hand_tweakR"
-                    position={[-1.25, 2.53, -0.06]}
-                    rotation={[0.26, -1.41, 1.89]}
-                    scale={-0.03}
+                    position={[-1.248, 2.53, -0.06]}
+                    rotation={[0.261, -1.409, 1.887]}
+                    scale={-0.034}
                 />
                 <group
                     name="WGT-rig_palmR"
-                    position={[-1.31, 2.53, -0.09]}
-                    rotation={[-2.23, -1.39, 0.77]}
-                    scale={-0.1}
+                    position={[-1.314, 2.528, -0.091]}
+                    rotation={[-2.231, -1.388, 0.774]}
+                    scale={-0.101}
                 />
                 <group
                     name="WGT-rig_f_index01R"
-                    position={[-1.42, 2.53, 0.02]}
-                    rotation={[0.89, -1.29, 0.45]}
-                    scale={-0.07}
+                    position={[-1.42, 2.528, 0.022]}
+                    rotation={[0.887, -1.292, 0.449]}
+                    scale={-0.073}
                 />
                 <group
                     name="WGT-rig_f_index02R"
-                    position={[-1.49, 2.51, 0.03]}
-                    rotation={[1.35, -1.25, 0.89]}
-                    scale={-0.05}
+                    position={[-1.489, 2.512, 0.035]}
+                    rotation={[1.351, -1.253, 0.889]}
+                    scale={-0.046}
                 />
                 <group
                     name="WGT-rig_f_index03R"
-                    position={[-1.53, 2.5, 0.04]}
-                    rotation={[1.29, -1.12, 0.84]}
-                    scale={-0.05}
+                    position={[-1.533, 2.498, 0.038]}
+                    rotation={[1.294, -1.12, 0.837]}
+                    scale={-0.052}
                 />
                 <group
                     name="WGT-rig_f_index01R001"
-                    position={[-1.58, 2.48, 0.04]}
-                    rotation={[-1.85, 1.12, 1.34]}
-                    scale={-0.03}
+                    position={[-1.58, 2.476, 0.044]}
+                    rotation={[-1.847, 1.12, 1.337]}
+                    scale={-0.026}
                 />
                 <group
                     name="WGT-rig_f_index01_masterR"
-                    position={[-1.42, 2.53, 0.02]}
-                    rotation={[0.89, -1.29, 0.45]}
-                    scale={-0.29}
+                    position={[-1.42, 2.528, 0.022]}
+                    rotation={[0.887, -1.292, 0.449]}
+                    scale={-0.285}
                 />
                 <group
                     name="WGT-rig_thumb01R"
-                    position={[-1.29, 2.5, -0.01]}
-                    rotation={[0.47, -0.62, -1.02]}
-                    scale={-0.05}
+                    position={[-1.29, 2.504, -0.005]}
+                    rotation={[0.471, -0.616, -1.025]}
+                    scale={-0.054}
                 />
                 <group
                     name="WGT-rig_thumb02R"
-                    position={[-1.32, 2.48, 0.03]}
-                    rotation={[0.77, -0.86, -0.82]}
-                    scale={-0.06}
+                    position={[-1.321, 2.484, 0.034]}
+                    rotation={[0.771, -0.857, -0.816]}
+                    scale={-0.058}
                 />
                 <group
                     name="WGT-rig_thumb03R"
-                    position={[-1.37, 2.46, 0.06]}
-                    rotation={[0.91, -1.02, -0.7]}
-                    scale={-0.07}
+                    position={[-1.365, 2.457, 0.061]}
+                    rotation={[0.908, -1.019, -0.704]}
+                    scale={-0.066}
                 />
                 <group
                     name="WGT-rig_thumb01R001"
-                    position={[-1.42, 2.43, 0.08]}
-                    rotation={[-2.23, 1.02, 0.47]}
-                    scale={-0.03}
+                    position={[-1.422, 2.43, 0.082]}
+                    rotation={[-2.234, 1.019, 0.469]}
+                    scale={-0.033}
                 />
                 <group
                     name="WGT-rig_thumb01_masterR"
-                    position={[-1.29, 2.5, -0.01]}
-                    rotation={[0.47, -0.62, -1.02]}
-                    scale={-0.27}
+                    position={[-1.29, 2.504, -0.005]}
+                    rotation={[0.471, -0.616, -1.025]}
+                    scale={-0.272}
                 />
                 <group
                     name="WGT-rig_f_middle01R"
-                    position={[-1.44, 2.54, -0.02]}
-                    rotation={[1.18, -1.32, -3.08]}
-                    scale={-0.07}
+                    position={[-1.435, 2.537, -0.024]}
+                    rotation={[1.184, -1.318, -3.078]}
+                    scale={-0.073}
                 />
                 <group
                     name="WGT-rig_f_middle02R"
-                    position={[-1.51, 2.52, -0.02]}
-                    rotation={[1.26, -1.33, -3]}
-                    scale={-0.05}
+                    position={[-1.506, 2.52, -0.017]}
+                    rotation={[1.26, -1.332, -3.005]}
+                    scale={-0.046}
                 />
                 <group
                     name="WGT-rig_f_middle03R"
-                    position={[-1.55, 2.51, -0.01]}
-                    rotation={[0.89, -1.3, 2.92]}
-                    scale={-0.05}
+                    position={[-1.55, 2.51, -0.014]}
+                    rotation={[0.893, -1.295, 2.924]}
+                    scale={-0.046}
                 />
                 <group
                     name="WGT-rig_f_middle01R001"
-                    position={[-1.59, 2.5, -0.01]}
-                    rotation={[-2.25, 1.3, -2.04]}
-                    scale={-0.02}
+                    position={[-1.594, 2.5, -0.006]}
+                    rotation={[-2.248, 1.295, -2.042]}
+                    scale={-0.023}
                 />
                 <group
                     name="WGT-rig_f_middle01_masterR"
-                    position={[-1.44, 2.54, -0.02]}
-                    rotation={[1.18, -1.32, -3.08]}
-                    scale={-0.28}
+                    position={[-1.435, 2.537, -0.024]}
+                    rotation={[1.184, -1.318, -3.078]}
+                    scale={-0.278}
                 />
                 <group
                     name="WGT-rig_f_ring01R"
-                    position={[-1.44, 2.53, -0.06]}
-                    rotation={[1.84, -1.34, 2.28]}
-                    scale={-0.05}
+                    position={[-1.443, 2.533, -0.063]}
+                    rotation={[1.843, -1.343, 2.275]}
+                    scale={-0.049}
                 />
                 <group
                     name="WGT-rig_f_ring02R"
-                    position={[-1.49, 2.52, -0.07]}
-                    rotation={[1.62, -1.32, 2.06]}
-                    scale={-0.05}
+                    position={[-1.49, 2.522, -0.066]}
+                    rotation={[1.617, -1.317, 2.057]}
+                    scale={-0.046}
                 />
                 <group
                     name="WGT-rig_f_ring03R"
-                    position={[-1.53, 2.51, -0.07]}
-                    rotation={[1.64, -1.2, 2.07]}
-                    scale={-0.04}
+                    position={[-1.535, 2.511, -0.067]}
+                    rotation={[1.636, -1.2, 2.075]}
+                    scale={-0.044}
                 />
                 <group
                     name="WGT-rig_f_ring01R001"
-                    position={[-1.58, 2.49, -0.07]}
-                    rotation={[-1.51, 1.2, 1.95]}
-                    scale={-0.02}
+                    position={[-1.576, 2.495, -0.068]}
+                    rotation={[-1.506, 1.2, 1.954]}
+                    scale={-0.022}
                 />
                 <group
                     name="WGT-rig_f_ring01_masterR"
-                    position={[-1.44, 2.53, -0.06]}
-                    rotation={[1.84, -1.34, 2.28]}
-                    scale={-0.22}
+                    position={[-1.443, 2.533, -0.063]}
+                    rotation={[1.843, -1.343, 2.275]}
+                    scale={-0.222}
                 />
                 <group
                     name="WGT-rig_f_pinky01R"
-                    position={[-1.42, 2.54, -0.1]}
-                    rotation={[1.87, -1.34, 1.86]}
-                    scale={-0.05}
+                    position={[-1.419, 2.542, -0.102]}
+                    rotation={[1.866, -1.341, 1.856]}
+                    scale={-0.047}
                 />
                 <group
                     name="WGT-rig_f_pinky02R"
-                    position={[-1.46, 2.53, -0.1]}
-                    rotation={[1.74, -1.25, 1.74]}
-                    scale={-0.04}
+                    position={[-1.465, 2.532, -0.105]}
+                    rotation={[1.74, -1.254, 1.736]}
+                    scale={-0.038}
                 />
                 <group
                     name="WGT-rig_f_pinky03R"
-                    position={[-1.5, 2.52, -0.11]}
-                    rotation={[1.72, -1, 1.71]}
-                    scale={-0.04}
+                    position={[-1.501, 2.521, -0.107]}
+                    rotation={[1.716, -1.004, 1.713]}
+                    scale={-0.036}
                 />
                 <group
                     name="WGT-rig_f_pinky01R001"
-                    position={[-1.53, 2.5, -0.11]}
-                    rotation={[-1.43, 1, 1.47]}
-                    scale={-0.02}
+                    position={[-1.532, 2.501, -0.11]}
+                    rotation={[-1.426, 1.004, 1.468]}
+                    scale={-0.018}
                 />
                 <group
                     name="WGT-rig_f_pinky01_masterR"
-                    position={[-1.42, 2.54, -0.1]}
-                    rotation={[1.87, -1.34, 1.86]}
-                    scale={-0.2}
+                    position={[-1.419, 2.542, -0.102]}
+                    rotation={[1.866, -1.341, 1.856]}
+                    scale={-0.197}
                 />
                 <group
                     name="WGT-rig_neck"
-                    position={[0, 2.63, -0.03]}
-                    rotation={[1.86, 0, 0]}
-                    scale={0.22}
+                    position={[0, 2.628, -0.026]}
+                    rotation={[1.856, 0, 0]}
+                    scale={0.216}
                 />
                 <group
                     name="WGT-rig_head"
-                    position={[0, 2.83, 0.03]}
+                    position={[0, 2.835, 0.035]}
                     rotation={[Math.PI / 2, 0, 0]}
-                    scale={0.33}
+                    scale={0.334}
                 />
                 <group
                     name="WGT-rig_tweak_spine005"
-                    position={[0, 2.73, 0.02]}
-                    rotation={[1.76, 0, 0]}
-                    scale={0.05}
+                    position={[0, 2.731, 0.015]}
+                    rotation={[1.758, 0, 0]}
+                    scale={0.053}
                 />
                 <group
                     name="WGT-rig_thigh_parentL"
-                    position={[0.18, 1.66, 0.02]}
-                    rotation={[-1.57, -0.08, 0.27]}
-                    scale={0.16}
+                    position={[0.182, 1.66, 0.025]}
+                    rotation={[-1.572, -0.083, 0.272]}
+                    scale={0.164}
                 />
                 <group
                     name="WGT-rig_thigh_fkL"
-                    position={[0.18, 1.66, 0.02]}
-                    rotation={[-1.57, -0.08, 0.27]}
-                    scale={0.66}
+                    position={[0.182, 1.66, 0.025]}
+                    rotation={[-1.572, -0.083, 0.272]}
+                    scale={0.655}
                 />
                 <group
                     name="WGT-rig_shin_fkL"
-                    position={[0.24, 1.01, 0.03]}
-                    rotation={[-1.45, -0.05, 0.28]}
-                    scale={0.87}
+                    position={[0.237, 1.007, 0.026]}
+                    rotation={[-1.453, -0.049, 0.28]}
+                    scale={0.871}
                 />
                 <group
                     name="WGT-rig_foot_fkL"
-                    position={[0.28, 0.14, -0.08]}
-                    rotation={[-2.7, -0.26, 0.12]}
-                    scale={0.25}
+                    position={[0.28, 0.143, -0.076]}
+                    rotation={[-2.698, -0.262, 0.122]}
+                    scale={0.249}
                 />
                 <group
                     name="WGT-rig_toe_fkL"
-                    position={[0.34, 0.04, 0.14]}
-                    rotation={[-Math.PI, 0, -3.14]}
-                    scale={0.11}
+                    position={[0.344, 0.04, 0.141]}
+                    rotation={[-Math.PI, 0, -3.141]}
+                    scale={0.113}
                 />
                 <group
                     name="WGT-rig_thigh_ikL"
-                    position={[0.18, 1.66, 0.02]}
-                    rotation={[-1.57, -0.08, 0.27]}
-                    scale={0.66}
+                    position={[0.182, 1.66, 0.025]}
+                    rotation={[-1.572, -0.083, 0.272]}
+                    scale={0.655}
                 />
                 <group
                     name="WGT-rig_thigh_ik_targetL"
-                    position={[0.65, 0.94, 1.49]}
-                    rotation={[0.05, 0.28, -0.01]}
+                    position={[0.652, 0.936, 1.49]}
+                    rotation={[0.048, 0.277, -0.007]}
                     scale={0.19}
                 />
-                <group name="WGT-rig_foot_ikL" position={[0.28, 0.14, -0.08]} scale={0.25} />
+                <group name="WGT-rig_foot_ikL" position={[0.28, 0.143, -0.076]} scale={0.249} />
                 <group
                     name="WGT-rig_VIS_thigh_ik_poleL"
-                    position={[0.24, 1.01, 0.03]}
-                    rotation={[Math.PI / 2, 0, 0.32]}
-                    scale={1.52}
+                    position={[0.237, 1.007, 0.026]}
+                    rotation={[Math.PI / 2, 0, 0.324]}
+                    scale={1.524}
                 />
                 <group
                     name="WGT-rig_thigh_tweakL"
-                    position={[0.18, 1.66, 0.02]}
-                    rotation={[-1.57, -0.08, 0.27]}
-                    scale={0.16}
+                    position={[0.182, 1.66, 0.025]}
+                    rotation={[-1.572, -0.083, 0.272]}
+                    scale={0.164}
                 />
                 <group
                     name="WGT-rig_thigh_tweakL001"
-                    position={[0.21, 1.33, 0.03]}
-                    rotation={[-1.57, -0.08, 0.27]}
-                    scale={0.16}
+                    position={[0.209, 1.333, 0.025]}
+                    rotation={[-1.572, -0.083, 0.272]}
+                    scale={0.164}
                 />
                 <group
                     name="WGT-rig_shin_tweakL"
-                    position={[0.24, 1.01, 0.03]}
-                    rotation={[-1.45, -0.05, 0.28]}
-                    scale={0.22}
+                    position={[0.237, 1.007, 0.026]}
+                    rotation={[-1.453, -0.049, 0.28]}
+                    scale={0.218}
                 />
                 <group
                     name="WGT-rig_shin_tweakL001"
-                    position={[0.26, 0.57, -0.03]}
-                    rotation={[-1.45, -0.05, 0.28]}
-                    scale={0.22}
+                    position={[0.258, 0.575, -0.025]}
+                    rotation={[-1.453, -0.049, 0.28]}
+                    scale={0.218}
                 />
                 <group
                     name="WGT-rig_foot_tweakL"
-                    position={[0.28, 0.14, -0.08]}
-                    rotation={[-2.7, -0.26, 0.12]}
-                    scale={0.06}
+                    position={[0.28, 0.143, -0.076]}
+                    rotation={[-2.698, -0.262, 0.122]}
+                    scale={0.062}
                 />
-                <group name="WGT-rig_foot_spin_ikL" position={[0.34, 0.04, 0.14]} scale={0.12} />
-                <group name="WGT-rig_foot_heel_ikL" position={[0.28, 0.14, -0.08]} scale={0.12} />
+                <group name="WGT-rig_foot_spin_ikL" position={[0.344, 0.04, 0.141]} scale={0.124} />
+                <group name="WGT-rig_foot_heel_ikL" position={[0.28, 0.143, -0.076]} scale={0.124} />
                 <group
                     name="WGT-rig_toe_ikL"
-                    position={[0.34, 0.04, 0.14]}
-                    rotation={[-Math.PI, 0, -3.14]}
-                    scale={0.11}
+                    position={[0.344, 0.04, 0.141]}
+                    rotation={[-Math.PI, 0, -3.141]}
+                    scale={0.113}
                 />
                 <group
                     name="WGT-rig_thigh_parentR"
-                    position={[-0.18, 1.66, 0.02]}
-                    rotation={[1.57, -0.08, 0.23]}
-                    scale={-0.16}
+                    position={[-0.182, 1.66, 0.025]}
+                    rotation={[1.57, -0.083, 0.227]}
+                    scale={-0.164}
                 />
                 <group
                     name="WGT-rig_thigh_fkR"
-                    position={[-0.18, 1.66, 0.02]}
-                    rotation={[1.57, -0.08, 0.23]}
-                    scale={-0.66}
+                    position={[-0.182, 1.66, 0.025]}
+                    rotation={[1.57, -0.083, 0.227]}
+                    scale={-0.655}
                 />
                 <group
                     name="WGT-rig_shin_fkR"
-                    position={[-0.24, 1.01, 0.03]}
-                    rotation={[1.69, -0.06, 0.23]}
-                    scale={-0.87}
+                    position={[-0.237, 1.007, 0.026]}
+                    rotation={[1.688, -0.055, 0.235]}
+                    scale={-0.871}
                 />
                 <group
                     name="WGT-rig_foot_fkR"
-                    position={[-0.28, 0.14, -0.08]}
-                    rotation={[0.44, -0.24, 0.11]}
-                    scale={-0.25}
+                    position={[-0.285, 0.143, -0.076]}
+                    rotation={[0.443, -0.242, 0.113]}
+                    scale={-0.247}
                 />
                 <group
                     name="WGT-rig_toe_fkR"
-                    position={[-0.34, 0.04, 0.14]}
-                    rotation={[0, 0, 3.14]}
-                    scale={-0.11}
+                    position={[-0.344, 0.04, 0.141]}
+                    rotation={[0, 0, 3.141]}
+                    scale={-0.113}
                 />
                 <group
                     name="WGT-rig_thigh_ikR"
-                    position={[-0.18, 1.66, 0.02]}
-                    rotation={[1.57, -0.08, 0.23]}
-                    scale={-0.66}
+                    position={[-0.182, 1.66, 0.025]}
+                    rotation={[1.57, -0.083, 0.227]}
+                    scale={-0.655}
                 />
                 <group
                     name="WGT-rig_thigh_ik_targetR"
-                    position={[-0.59, 0.93, 1.51]}
-                    rotation={[-3.09, 0.23, -0.01]}
+                    position={[-0.586, 0.932, 1.507]}
+                    rotation={[-3.091, 0.231, -0.006]}
                     scale={-0.19}
                 />
                 <group
                     name="WGT-rig_foot_ikR"
-                    position={[-0.28, 0.14, -0.08]}
+                    position={[-0.285, 0.143, -0.076]}
                     rotation={[-Math.PI, 0, 0]}
-                    scale={-0.25}
+                    scale={-0.247}
                 />
                 <group
                     name="WGT-rig_VIS_thigh_ik_poleR"
-                    position={[-0.24, 1.01, 0.03]}
-                    rotation={[-Math.PI / 2, 0, 0.28]}
-                    scale={-1.52}
+                    position={[-0.237, 1.007, 0.026]}
+                    rotation={[-Math.PI / 2, 0, 0.284]}
+                    scale={-1.524}
                 />
                 <group
                     name="WGT-rig_thigh_tweakR"
-                    position={[-0.18, 1.66, 0.02]}
-                    rotation={[1.57, -0.08, 0.23]}
-                    scale={-0.16}
+                    position={[-0.182, 1.66, 0.025]}
+                    rotation={[1.57, -0.083, 0.227]}
+                    scale={-0.164}
                 />
                 <group
                     name="WGT-rig_thigh_tweakR001"
-                    position={[-0.21, 1.33, 0.03]}
-                    rotation={[1.57, -0.08, 0.23]}
-                    scale={-0.16}
+                    position={[-0.209, 1.333, 0.025]}
+                    rotation={[1.57, -0.083, 0.227]}
+                    scale={-0.164}
                 />
                 <group
                     name="WGT-rig_shin_tweakR"
-                    position={[-0.24, 1.01, 0.03]}
-                    rotation={[1.69, -0.06, 0.23]}
-                    scale={-0.22}
+                    position={[-0.237, 1.007, 0.026]}
+                    rotation={[1.688, -0.055, 0.235]}
+                    scale={-0.218}
                 />
                 <group
                     name="WGT-rig_shin_tweakR001"
-                    position={[-0.26, 0.57, -0.03]}
-                    rotation={[1.69, -0.06, 0.23]}
-                    scale={-0.22}
+                    position={[-0.261, 0.575, -0.025]}
+                    rotation={[1.688, -0.055, 0.235]}
+                    scale={-0.218}
                 />
                 <group
                     name="WGT-rig_foot_tweakR"
-                    position={[-0.28, 0.14, -0.08]}
-                    rotation={[0.44, -0.24, 0.11]}
-                    scale={-0.06}
+                    position={[-0.285, 0.143, -0.076]}
+                    rotation={[0.443, -0.242, 0.113]}
+                    scale={-0.062}
                 />
                 <group
                     name="WGT-rig_foot_spin_ikR"
-                    position={[-0.34, 0.04, 0.14]}
+                    position={[-0.344, 0.04, 0.141]}
                     rotation={[-Math.PI, 0, 0]}
-                    scale={-0.12}
+                    scale={-0.124}
                 />
                 <group
                     name="WGT-rig_foot_heel_ikR"
-                    position={[-0.28, 0.14, -0.08]}
+                    position={[-0.285, 0.143, -0.076]}
                     rotation={[-Math.PI, 0, 0]}
-                    scale={-0.12}
+                    scale={-0.124}
                 />
                 <group
                     name="WGT-rig_toe_ikR"
-                    position={[-0.34, 0.04, 0.14]}
-                    rotation={[0, 0, 3.14]}
-                    scale={-0.11}
+                    position={[-0.344, 0.04, 0.141]}
+                    rotation={[0, 0, 3.141]}
+                    scale={-0.113}
                 />
-                <group name="WGT-rig_root" scale={1.47} />
+                <group name="WGT-rig_root" scale={1.469} />
             </group>
+
+
         </group>
     )
 }

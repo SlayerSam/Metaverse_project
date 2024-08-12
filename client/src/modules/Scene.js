@@ -43,13 +43,16 @@ export default function Scene() {
         <>
             <Canvas>
                 {isOrthographic ? (
-                    <OrthographicCamera
-                        makeDefault
-                        zoom={50}
-                        near={0.1}
-                        far={1000}
-                        rotation={[-Math.PI / 4, Math.PI / 4, 0]}
-                    />
+                    <>
+                        <OrthographicCamera
+                            makeDefault
+                            zoom={50}
+                            near={0.1}
+                            far={1000}
+                            rotation={[-Math.PI / 4, Math.PI / 4, 0]}
+                        />
+                        <OrbitControls />
+                    </>
                 ) : (
                     <perspectiveCamera
                         makeDefault
@@ -58,7 +61,6 @@ export default function Scene() {
                         far={1000}
                     />
                 )}
-                <OrbitControls />
                 <ambientLight intensity={0.5} />
                 <pointLight position={[10, 10, 10]} />
                 <Base url={'/models/base.glb'} />
