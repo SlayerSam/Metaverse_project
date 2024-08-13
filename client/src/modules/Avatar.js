@@ -21,11 +21,10 @@ export function Avatar({ group }) {
     }
 
     useFrame(() => {
-        console.log(group.current.position)
         let isMoving = false
         const direction = new THREE.Vector3();
         group.current.getWorldDirection(direction);
-        direction.y = 0; // Keep the movement on the ground plane
+        direction.y = 0;
         direction.normalize()
         if (keys['ArrowUp'] || keys['KeyW']) {
             group.current.position.add(direction.clone().multiplyScalar(speed));
