@@ -5,46 +5,92 @@ import { useGLTF, OrthographicCamera, OrbitControls, FirstPersonControls, Perspe
 import { Avatar } from './Avatar';
 import * as THREE from 'three';
 
-const Camera = ({ avatarRef, isOrthographic }) => {
-    const cameraRef = useRef();
-    const helperRef = useRef();
-
+const ThirdPersonCamera = ({ avatarRef, camera }) => {
     useEffect(() => {
-        if (cameraRef.current) {
-            helperRef.current = new THREE.CameraHelper(cameraRef.current);
-            cameraRef.current.parent.add(helperRef.current);
+        if (camera.current) {
+            console.log(camera.current)
+            camera.current.position.set(0, 1.5, 5);
         }
-        return () => {
-            if (helperRef.current) {
-                helperRef.current.parent.remove(helperRef.current);
-            }
-        };
     }, []);
 
-    useFrame((state) => {
-        const camera = state.camera;
+    const calculateOffset = () => {
+        const idealOffset = new THREE.Vector3(0, 1.5, 5);
         if (avatarRef.current) {
-            const avatarPosition = avatarRef.current.position.clone();
+            idealOffset.applyQuaternion(avatarRef.current.quaternion);
+            idealOffset.add(avatarRef.current.position);
+        }
+        return idealOffset;
+    };
 
-            if (isOrthographic) {
-                camera.position.copy(avatarPosition);
-                camera.position.z -= 5; // Set a fixed distance behind the avatar
-            } else {
-                camera.position.copy(avatarPosition);
-                camera.position.z -= 2;
-                camera.position.y += 3;
-                camera.position.x = avatarPosition.x;
-            }
-            camera.lookAt(avatarRef.current.position);
+    const calculateLookAt = () => {
+        const idealLookAt = new THREE.Vector3(0, 10, 50);
+        if (avatarRef.current) {
+            idealLookAt.applyQuaternion(avatarRef.current.quaternion);
+            idealLookAt.add(avatarRef.current.position);
+        }
+        return idealLookAt;
+    };
 
-            if (helperRef.current) {
-                helperRef.current.update();
-            }
+    useFrame(() => {
+        camera.current.position.set(10, 20, 40)
+        const idealOffset = calculateOffset();
+        const idealLookAt = calculateLookAt();
+
+        if (camera.current) {
+            camera.current.position.copy(idealOffset);
+            camera.current.lookAt(idealLookAt);
         }
     });
 
-    return <perspectiveCamera ref={cameraRef} makeDefault fov={75} near={0.1} far={1000} />;
+    return (
+        <>
+            <PerspectiveCamera
+                ref={camera}
+                fov={75}
+                aspect={window.innerWidth / window.innerHeight}
+                near={1}
+                far={1000}
+            />
+        </>
+    );
 };
+
+
+const FirstPersonCamera = ({ avatarRef }) => {
+    const camera = new THREE.PerspectiveCamera(60, 1, 1, 3)
+    const calculateOffset = () => {
+        const idealOffset = new THREE.Vector3(0, 3, -0.6);
+        if (avatarRef.current) {
+            idealOffset.applyQuaternion(avatarRef.current.quaternion);
+            idealOffset.add(avatarRef.current.position);
+        }
+        return idealOffset;
+    };
+
+    const calculateLookAt = () => {
+        const idealLookAt = new THREE.Vector3(0, 4, 50);
+        if (avatarRef.current) {
+            idealLookAt.applyQuaternion(avatarRef.current.quaternion);
+            idealLookAt.add(avatarRef.current.position);
+        }
+        return idealLookAt;
+    };
+
+    useFrame(() => {
+        camera.position.set(10, 20, 40)
+        const idealOffset = calculateOffset();
+        const idealLookAt = calculateLookAt();
+
+        camera.position.copy(idealOffset);
+        camera.lookAt(idealLookAt);
+    });
+
+    return (
+        <group >
+            <cameraHelper args={[camera]} />
+        </group>
+    )
+}
 
 const Base = ({ url }) => {
     const base = useGLTF(url);
@@ -53,6 +99,7 @@ const Base = ({ url }) => {
 
 export default function Scene() {
     const avatarRef = useRef();
+    const camera = useRef()
     const [isOrthographic, setIsOrthographic] = useState(false);
 
     const toggleCamera = () => {
@@ -62,22 +109,19 @@ export default function Scene() {
 
     return (
         <>
-            <Canvas>
-                {isOrthographic ? (
+            <Canvas shadows camera={{ position: [0, 3, -0.6], fov: 60 }}>
+                <OrbitControls />
+                <FirstPersonCamera avatarRef={avatarRef} />
+                {/* <ThirdPersonCamera avatarRef={avatarRef} camera={camera} /> */}
+                {/* {isOrthographic ? (
                     <>
-                        <OrbitControls />
-                        <OrthographicCamera
-                            left={window.innerWidth / - 2} right={window.innerWidth / 2} top={window.innerHeight / 2} bottom={window.innerHeight / - 2} near={0.1} far={1000}
-                        />
                     </>
                 ) :
                     <>
-                        <FirstPersonControls />
                         <PerspectiveCamera
-                            fov={45} aspect={window.innerWidth / window.innerHeight} near={1} far={1000}
                         />
                     </>
-                }
+                } */}
                 <ambientLight intensity={0.5} />
                 <pointLight position={[10, 10, 10]} />
                 <Base url={'/models/base.glb'} />
