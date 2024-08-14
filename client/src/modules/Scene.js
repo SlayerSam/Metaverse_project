@@ -1,12 +1,13 @@
 'use client';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { useRef, useState } from 'react';
-import { useGLTF, OrbitControls } from '@react-three/drei';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { useRef, useState, useEffect } from 'react';
+import { useGLTF, OrbitControls, PointerLockControls, Stats } from '@react-three/drei';
 import { Avatar } from './Avatar';
 import * as THREE from 'three';
 
-const ThirdPersonCamera = ({ avatarRef, camera }) => {
-    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 3)
+const ThirdPersonCamera = ({ avatarRef }) => {
+    const { camera, gl } = useThree();
+    const orbitControlsRef = useRef();
 
     const calculateOffset = () => {
         const idealOffset = new THREE.Vector3(0, 5, -5);
@@ -18,7 +19,7 @@ const ThirdPersonCamera = ({ avatarRef, camera }) => {
     };
 
     const calculateLookAt = () => {
-        const idealLookAt = new THREE.Vector3(0, 4, 50);
+        const idealLookAt = new THREE.Vector3(0, -5, 40);
         if (avatarRef.current) {
             idealLookAt.applyQuaternion(avatarRef.current.quaternion);
             idealLookAt.add(avatarRef.current.position);
@@ -27,23 +28,25 @@ const ThirdPersonCamera = ({ avatarRef, camera }) => {
     };
 
     useFrame(() => {
-        camera.position.set(10, 20, 40)
-        const idealOffset = calculateOffset();
-        const idealLookAt = calculateLookAt();
+        if (avatarRef.current) {
+            const idealOffset = calculateOffset();
+            const idealLookAt = calculateLookAt();
+            camera.position.copy(idealOffset);
+            camera.lookAt(idealLookAt);
 
-        camera.position.copy(idealOffset);
-        camera.rotation.set(3.5, 0, 0)
-        camera.lookAt(idealLookAt);
-        console.log(camera.position)
+            // Update OrbitControls target
+            orbitControlsRef.current.target.copy(avatarRef.current.position);
+        }
     });
 
-    return null
+    return <OrbitControls ref={orbitControlsRef} target={avatarRef.current ? avatarRef.current.position : new THREE.Vector3(0, 0, 0)} />;
 };
 
-const FirstPersonCamera = ({ avatarRef, camera }) => {
-    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 3)
+const FirstPersonCamera = ({ avatarRef }) => {
+    const { camera } = useThree();
+
     const calculateOffset = () => {
-        const idealOffset = new THREE.Vector3(0, 3, -0.6);
+        const idealOffset = new THREE.Vector3(0, 3, 0);
         if (avatarRef.current) {
             idealOffset.applyQuaternion(avatarRef.current.quaternion);
             idealOffset.add(avatarRef.current.position);
@@ -61,7 +64,8 @@ const FirstPersonCamera = ({ avatarRef, camera }) => {
     };
 
     useFrame(() => {
-        camera.position.set(10, 20, 40)
+        if (!avatarRef.current) return;
+
         const idealOffset = calculateOffset();
         const idealLookAt = calculateLookAt();
 
@@ -69,8 +73,8 @@ const FirstPersonCamera = ({ avatarRef, camera }) => {
         camera.lookAt(idealLookAt);
     });
 
-    return null
-}
+    return <PointerLockControls />;
+};
 
 const Base = ({ url }) => {
     const base = useGLTF(url);
@@ -80,7 +84,6 @@ const Base = ({ url }) => {
 export default function Scene() {
     const avatarRef = useRef();
     const [isFirstPerson, setIsFirstPerson] = useState(false);
-    let camera = null
 
     const toggleCamera = () => {
         setIsFirstPerson(!isFirstPerson);
@@ -88,12 +91,11 @@ export default function Scene() {
 
     return (
         <>
-            <Canvas shadows camera={camera}>
-                <OrbitControls />
+            <Canvas shadows>
                 {isFirstPerson ? (
-                    <FirstPersonCamera avatarRef={avatarRef} camera={camera} />
+                    <FirstPersonCamera avatarRef={avatarRef} />
                 ) : (
-                    <ThirdPersonCamera avatarRef={avatarRef} camera={camera} />
+                    <ThirdPersonCamera avatarRef={avatarRef} />
                 )}
                 <ambientLight intensity={0.5} />
                 <pointLight position={[10, 10, 10]} />
@@ -101,7 +103,7 @@ export default function Scene() {
                 <Avatar group={avatarRef} />
             </Canvas>
             <button onClick={toggleCamera} style={{ position: 'absolute', top: '10px', left: '10px' }}>
-                Toggle Camera
+                {isFirstPerson ? 'change to TPP' : 'change to FPP'}
             </button>
         </>
     );

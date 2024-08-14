@@ -26,7 +26,6 @@ export function Avatar({ group }) {
 
 
         const head = group.current.getObjectByName('Head');
-        console.log(head)
         group.current.getWorldDirection(direction);
         direction.y = 0;
         direction.normalize();
@@ -53,11 +52,12 @@ export function Avatar({ group }) {
 
         if (isMoving) {
             actions['Walking']?.play();
-            actions['Rest']?.stop();
+            actions['Still']?.stop();
         } else {
             actions['Walking']?.stop();
-            actions['Rest']?.play();
+            actions['Still']?.play();
         }
+        actions['Still']?.play()
     });
 
     useEffect(() => {
