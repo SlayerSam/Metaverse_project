@@ -1,20 +1,15 @@
 'use client';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useRef, useState, useEffect } from 'react';
-import { useGLTF, OrthographicCamera, OrbitControls, FirstPersonControls, PerspectiveCamera } from '@react-three/drei';
+import { useRef, useState } from 'react';
+import { useGLTF, OrbitControls } from '@react-three/drei';
 import { Avatar } from './Avatar';
 import * as THREE from 'three';
 
 const ThirdPersonCamera = ({ avatarRef, camera }) => {
-    useEffect(() => {
-        if (camera.current) {
-            console.log(camera.current)
-            camera.current.position.set(0, 1.5, 5);
-        }
-    }, []);
+    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 3)
 
     const calculateOffset = () => {
-        const idealOffset = new THREE.Vector3(0, 1.5, 5);
+        const idealOffset = new THREE.Vector3(0, 5, -5);
         if (avatarRef.current) {
             idealOffset.applyQuaternion(avatarRef.current.quaternion);
             idealOffset.add(avatarRef.current.position);
@@ -23,7 +18,7 @@ const ThirdPersonCamera = ({ avatarRef, camera }) => {
     };
 
     const calculateLookAt = () => {
-        const idealLookAt = new THREE.Vector3(0, 10, 50);
+        const idealLookAt = new THREE.Vector3(0, 4, 50);
         if (avatarRef.current) {
             idealLookAt.applyQuaternion(avatarRef.current.quaternion);
             idealLookAt.add(avatarRef.current.position);
@@ -32,32 +27,21 @@ const ThirdPersonCamera = ({ avatarRef, camera }) => {
     };
 
     useFrame(() => {
-        camera.current.position.set(10, 20, 40)
+        camera.position.set(10, 20, 40)
         const idealOffset = calculateOffset();
         const idealLookAt = calculateLookAt();
 
-        if (camera.current) {
-            camera.current.position.copy(idealOffset);
-            camera.current.lookAt(idealLookAt);
-        }
+        camera.position.copy(idealOffset);
+        camera.rotation.set(3.5, 0, 0)
+        camera.lookAt(idealLookAt);
+        console.log(camera.position)
     });
 
-    return (
-        <>
-            <PerspectiveCamera
-                ref={camera}
-                fov={75}
-                aspect={window.innerWidth / window.innerHeight}
-                near={1}
-                far={1000}
-            />
-        </>
-    );
+    return null
 };
 
-
-const FirstPersonCamera = ({ avatarRef }) => {
-    const camera = new THREE.PerspectiveCamera(60, 1, 1, 3)
+const FirstPersonCamera = ({ avatarRef, camera }) => {
+    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 3)
     const calculateOffset = () => {
         const idealOffset = new THREE.Vector3(0, 3, -0.6);
         if (avatarRef.current) {
@@ -85,11 +69,7 @@ const FirstPersonCamera = ({ avatarRef }) => {
         camera.lookAt(idealLookAt);
     });
 
-    return (
-        <group >
-            <cameraHelper args={[camera]} />
-        </group>
-    )
+    return null
 }
 
 const Base = ({ url }) => {
@@ -99,29 +79,22 @@ const Base = ({ url }) => {
 
 export default function Scene() {
     const avatarRef = useRef();
-    const camera = useRef()
-    const [isOrthographic, setIsOrthographic] = useState(false);
+    const [isFirstPerson, setIsFirstPerson] = useState(false);
+    let camera = null
 
     const toggleCamera = () => {
-        console.log(isOrthographic)
-        setIsOrthographic(!isOrthographic);
+        setIsFirstPerson(!isFirstPerson);
     };
 
     return (
         <>
-            <Canvas shadows camera={{ position: [0, 3, -0.6], fov: 60 }}>
+            <Canvas shadows camera={camera}>
                 <OrbitControls />
-                <FirstPersonCamera avatarRef={avatarRef} />
-                {/* <ThirdPersonCamera avatarRef={avatarRef} camera={camera} /> */}
-                {/* {isOrthographic ? (
-                    <>
-                    </>
-                ) :
-                    <>
-                        <PerspectiveCamera
-                        />
-                    </>
-                } */}
+                {isFirstPerson ? (
+                    <FirstPersonCamera avatarRef={avatarRef} camera={camera} />
+                ) : (
+                    <ThirdPersonCamera avatarRef={avatarRef} camera={camera} />
+                )}
                 <ambientLight intensity={0.5} />
                 <pointLight position={[10, 10, 10]} />
                 <Base url={'/models/base.glb'} />
