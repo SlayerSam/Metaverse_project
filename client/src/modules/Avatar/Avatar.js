@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useGLTF, useAnimations } from '@react-three/drei'
-import { useFrame } from 'react-three-fiber'
+import { useFrame, useThree } from 'react-three-fiber'
 import * as THREE from 'three'
 
-export function Avatar({ group }) {
+export function Avatar({ group, setBaseUrl }) {
     const { nodes, materials, animations } = useGLTF('/models/Avatar.glb')
     const { actions } = useAnimations(animations, group)
     const [keys, setKeys] = useState({})
+    const { gl, scene, camera } = useThree();
 
     const speed = 0.1
     const rotationSpeed = 0.05;
@@ -18,6 +19,25 @@ export function Avatar({ group }) {
     const handleKeyUp = (event) => {
         setKeys((prevKeys) => ({ ...prevKeys, [event.code]: false }))
     }
+    const handleClick = (event) => {
+        console.log(event)
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        mouse.x = (event.clientX / gl.domElement.clientWidth) * 2 - 1;
+        mouse.y = -(event.clientY / gl.domElement.clientHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(scene.children, true);
+
+        if (intersects.length > 0) {
+            const selectedObject = intersects[0].object;
+
+            if (selectedObject.name === 'Cube006') {
+                setBaseUrl(false);
+            }
+        }
+    };
 
     useFrame((state) => {
         let isMoving = false;
@@ -63,9 +83,12 @@ export function Avatar({ group }) {
     useEffect(() => {
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
+        const handleObjectSelection = (event) => handleClick(event);
+        window.addEventListener('click', handleObjectSelection);
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
+            window.removeEventListener('click', handleObjectSelection);
         };
     }, []);
     return (
