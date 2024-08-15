@@ -32,10 +32,8 @@ export function Avatar({ group, setBaseUrl }) {
         if (intersects.length > 0) {
             const selectedObject = intersects[0].object;
 
-            // Calculate the distance between the camera and the selected object
             const distance = Math.floor(group.current.position.distanceTo(selectedObject.position));
 
-            // Check if the selected object is within 5 meters (or any distance you specify)
             if (selectedObject.name === 'Cube006' && distance <= 7) {
                 actions['Select'].play();
                 setTimeout(() => {
