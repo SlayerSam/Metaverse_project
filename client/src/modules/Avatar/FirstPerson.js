@@ -34,5 +34,5 @@ export default function FirstPersonCamera({ avatarRef }) {
         camera.lookAt(idealLookAt);
     });
 
-    return <PointerLockControls />;
+    return null;
 };

@@ -24,19 +24,10 @@ export default function Scene() {
     return (
         <>
             <Canvas shadows ref={canvasRef}>
-                {isFirstPerson ? (
-                    <FirstPersonCamera avatarRef={avatarRef} />
-                ) : (
-                    <ThirdPersonCamera avatarRef={avatarRef} />
-                )}
+                {isFirstPerson ? <FirstPersonCamera avatarRef={avatarRef} /> : <ThirdPersonCamera avatarRef={avatarRef} />}
+                {BaseUrl ? <SampleBase /> : <SampleBase2 />}
                 <ambientLight intensity={0.5} />
                 <pointLight position={[10, 10, 10]} />
-                {
-                    BaseUrl ?
-                        <SampleBase />
-                        :
-                        <SampleBase2 />
-                }
                 <Avatar group={avatarRef} setBaseUrl={setBaseUrl} canvasRef={canvasRef} />
             </Canvas>
             <button onClick={toggleCamera} style={{ position: 'absolute', top: '10px', left: '10px' }}>
