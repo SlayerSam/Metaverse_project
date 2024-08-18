@@ -9,7 +9,7 @@ export function Avatar({ group, setBaseUrl }) {
     const [keys, setKeys] = useState({})
     const { gl, scene, camera } = useThree();
 
-    const speed = 0.1
+    const speed = 5
     const rotationSpeed = 0.05;
 
     const handleKeyDown = (event) => {

@@ -1,107 +1,118 @@
+// import React from 'react'
+// import { useGLTF, Reflector } from '@react-three/drei'
+
+// export default function SampleBase(props) {
+//     const { nodes, materials } = useGLTF('/models/base.glb')
+
+//     return (
+//         <group {...props} dispose={null}>
+//             <group name="Scene">
+//                 <mesh
+//                     name="Plane"
+//                     castShadow
+//                     receiveShadow
+//                     geometry={nodes.Plane.geometry}
+//                     material={materials['Material.001']}
+//                     scale={83.282}
+//                 />
+//                 <mesh
+//                     name="Cube"
+//                     castShadow
+//                     receiveShadow
+//                     geometry={nodes.Cube.geometry}
+//                     material={materials['Material.002']}
+//                     position={[0, 19.921, 70.293]}
+//                     rotation={[0, 0, -Math.PI]}
+//                     scale={[-19.604, -19.604, -5.938]}
+//                 />
+//                 <mesh
+//                     name="Cube001"
+//                     castShadow
+//                     receiveShadow
+//                     geometry={nodes.Cube001.geometry}
+//                     material={materials['Material.003']}
+//                     position={[-61.907, 19.772, -1.578]}
+//                     rotation={[Math.PI, -1.563, 0]}
+//                     scale={[-19.604, -19.604, -5.938]}
+//                 />
+//                 <mesh
+//                     name="Cube002"
+//                     castShadow
+//                     receiveShadow
+//                     geometry={nodes.Cube002.geometry}
+//                     material={materials['Material.005']}
+//                     position={[68.813, 19.698, -1.851]}
+//                     rotation={[0, -1.566, -Math.PI]}
+//                     scale={[-19.604, -19.604, -5.938]}
+//                 />
+//                 <mesh
+//                     name="Cube003"
+//                     castShadow
+//                     receiveShadow
+//                     geometry={nodes.Cube003.geometry}
+//                     material={materials['Material.004']}
+//                     position={[0, 19.698, -73.083]}
+//                     rotation={[0, 0, -Math.PI]}
+//                     scale={[-19.604, -19.604, -5.938]}
+//                 />
+//                 <mesh
+//                     name="Cube004"
+//                     castShadow
+//                     receiveShadow
+//                     geometry={nodes.Cube004.geometry}
+//                     material={materials['Material.006']}
+//                     position={[-45.933, 7, 0]}
+//                     scale={[0.3, 7, 4]}
+//                 />
+//                 <mesh
+//                     name="Cube005"
+//                     castShadow
+//                     receiveShadow
+//                     geometry={nodes.Cube005.geometry}
+//                     material={materials.Material}
+//                     position={[-46.032, 7, 0]}
+//                     scale={[0.138, 6, 3]}
+//                 />
+
+//                 <Reflector
+//                     resolution={1024}
+//                     args={[1, 1]}
+//                     mirror={0.8}
+//                     scale={[8, 10, 3]}
+//                 >
+//                     {(Material, props) => (
+//                         <Material
+//                             metalness={1}
+//                             roughness={0}
+//                             {...props}
+//                             color="#f0f0f0" // Light gray might work better than pure white
+//                         />
+//                     )}
+//                 </Reflector>
+
+
+//                 <mesh
+//                     name="Cube006"
+//                     castShadow
+//                     receiveShadow
+//                     geometry={nodes.Cube006.geometry}
+//                     material={nodes.Cube006.material}
+//                     position={[-37.629, 5.491, -0.308]}
+//                 />
+//             </group>
+//         </group>
+//     )
+// }
+
+// useGLTF.preload('/models/base.glb')
+
+import { useGLTF } from '@react-three/drei'
 import React from 'react'
-import { useGLTF, Reflector } from '@react-three/drei'
 
-export default function SampleBase(props) {
-    const { nodes, materials } = useGLTF('/models/base.glb')
-
+export default function SampleBase() {
+    const { scene } = useGLTF('/models/shoppingmall.glb')
     return (
-        <group {...props} dispose={null}>
-            <group name="Scene">
-                <mesh
-                    name="Plane"
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.Plane.geometry}
-                    material={materials['Material.001']}
-                    scale={83.282}
-                />
-                <mesh
-                    name="Cube"
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.Cube.geometry}
-                    material={materials['Material.002']}
-                    position={[0, 19.921, 70.293]}
-                    rotation={[0, 0, -Math.PI]}
-                    scale={[-19.604, -19.604, -5.938]}
-                />
-                <mesh
-                    name="Cube001"
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.Cube001.geometry}
-                    material={materials['Material.003']}
-                    position={[-61.907, 19.772, -1.578]}
-                    rotation={[Math.PI, -1.563, 0]}
-                    scale={[-19.604, -19.604, -5.938]}
-                />
-                <mesh
-                    name="Cube002"
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.Cube002.geometry}
-                    material={materials['Material.005']}
-                    position={[68.813, 19.698, -1.851]}
-                    rotation={[0, -1.566, -Math.PI]}
-                    scale={[-19.604, -19.604, -5.938]}
-                />
-                <mesh
-                    name="Cube003"
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.Cube003.geometry}
-                    material={materials['Material.004']}
-                    position={[0, 19.698, -73.083]}
-                    rotation={[0, 0, -Math.PI]}
-                    scale={[-19.604, -19.604, -5.938]}
-                />
-                <mesh
-                    name="Cube004"
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.Cube004.geometry}
-                    material={materials['Material.006']}
-                    position={[-45.933, 7, 0]}
-                    scale={[0.3, 7, 4]}
-                />
-                <mesh
-                    name="Cube005"
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.Cube005.geometry}
-                    material={materials.Material}
-                    position={[-46.032, 7, 0]}
-                    scale={[0.138, 6, 3]}
-                />
-
-                <Reflector
-                    resolution={1024}
-                    args={[1, 1]}
-                    mirror={0.8}
-                    scale={[8, 10, 3]}
-                >
-                    {(Material, props) => (
-                        <Material
-                            metalness={1}
-                            roughness={0}
-                            {...props}
-                            color="#f0f0f0" // Light gray might work better than pure white
-                        />
-                    )}
-                </Reflector>
-
-
-                <mesh
-                    name="Cube006"
-                    castShadow
-                    receiveShadow
-                    geometry={nodes.Cube006.geometry}
-                    material={nodes.Cube006.material}
-                    position={[-37.629, 5.491, -0.308]}
-                />
-            </group>
-        </group>
+        <primitive object={scene} />
     )
 }
-
-useGLTF.preload('/models/base.glb')
+useGLTF.preload('/models/shoppingmall.glb')
