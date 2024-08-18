@@ -3,6 +3,7 @@ import { Inter as FontSans } from "next/font/google"
 
 import { cn } from "@/lib/utils"
 import { ThemeProvider } from "next-themes"
+import { Toaster } from "sonner"
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -19,6 +20,7 @@ export default function RootLayout({ children }) {
           fontSans.variable
         )}
       >
+        <Toaster richColors position="top-right" />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

@@ -1,13 +1,13 @@
 'use client';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useRef, useState, useEffect } from 'react';
-import { useGLTF, OrbitControls, PointerLockControls, Stats } from '@react-three/drei';
+import { useGLTF, OrbitControls, PointerLockControls, Stats, Environment } from '@react-three/drei';
 import { Avatar } from './Avatar/Avatar';
 import * as THREE from 'three';
 import FirstPerson from './Avatar/FirstPerson';
 import ThirdPersonCamera from './Avatar/ThirdPerson';
 import FirstPersonCamera from './Avatar/FirstPerson';
-import { SampleBase } from './Base/SampleBase';
+import SampleBase from './Base/SampleBase';
 import { SampleBase2 } from './Base/SampleBase2';
 
 
@@ -24,10 +24,11 @@ export default function Scene() {
     return (
         <>
             <Canvas shadows ref={canvasRef}>
+                <Environment files='/models/base.hdr' />
                 {isFirstPerson ? <FirstPersonCamera avatarRef={avatarRef} /> : <ThirdPersonCamera avatarRef={avatarRef} />}
                 {BaseUrl ? <SampleBase /> : <SampleBase2 />}
                 <ambientLight intensity={0.5} />
-                <pointLight position={[10, 10, 10]} />
+                <pointLight position={[10, 10, 100]} />
                 <Avatar group={avatarRef} setBaseUrl={setBaseUrl} canvasRef={canvasRef} />
             </Canvas>
             <button onClick={toggleCamera} style={{ position: 'absolute', top: '10px', left: '10px' }}>

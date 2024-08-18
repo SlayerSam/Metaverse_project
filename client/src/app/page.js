@@ -5,7 +5,7 @@ import React from 'react'
 
 export default function page() {
   return (
-    <div className='w-full h-screen bg-sky-300'>
+    <div className='w-full h-screen'>
       <Navbar />
       <Scene />
     </div>

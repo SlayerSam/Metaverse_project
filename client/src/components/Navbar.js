@@ -1,5 +1,6 @@
 import React from 'react'
 import { Button } from './ui/button'
+import { Signup } from './SIgnup'
 
 export default function Navbar() {
     return (
@@ -8,9 +9,9 @@ export default function Navbar() {
                 {/* div for icon */}
             </div>
             <div className='w-1/2 h-full border-2 border-blue-500'>
-                <div className='flex '>
-                    <Button >Signup</Button>
-                    <Button >Login</Button>
+                <div className='flex justify-around flex-wrap items-center h-full w-1/3'>
+                    <Signup />
+                    <Button variant='secondary' className='hover:bg-violet-200'>Login</Button>
                 </div>
             </div>
         </div>
