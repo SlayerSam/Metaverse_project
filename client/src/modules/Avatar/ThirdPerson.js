@@ -1,31 +1,77 @@
 import { useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 
-export default function ThirdPersonCamera({ avatarRef }) {
-    const { camera } = useThree();
+export default function ThirdPersonCamera({ avatarRef, isMoving }) {
+    const { camera, gl } = useThree();
+    const controlsRef = useRef({
+        isDragging: false,
+        prevMousePos: new THREE.Vector2(),
+        azimuthAngle: 30,
+        polarAngle: Math.PI / 4,
+        distance: 8, 
+    });
 
     const calculateOffset = () => {
-        const idealOffset = new THREE.Vector3(0, 5, -5);
+        const idealOffset = new THREE.Vector3(0, 2, -controlsRef.current.distance);
+        idealOffset.applyAxisAngle(new THREE.Vector3(1, 0, 0), controlsRef.current.polarAngle);
+        idealOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), controlsRef.current.azimuthAngle);
         if (avatarRef.current) {
-            idealOffset.applyQuaternion(avatarRef.current.quaternion);
             idealOffset.add(avatarRef.current.position);
         }
         return idealOffset;
     };
 
     const calculateLookAt = () => {
-        const idealLookAt = new THREE.Vector3(0, 1, 20); 
+        const idealLookAt = new THREE.Vector3(0, 1, 0);
         if (avatarRef.current) {
-            idealLookAt.applyQuaternion(avatarRef.current.quaternion);
             idealLookAt.add(avatarRef.current.position);
         }
         return idealLookAt;
     };
 
+    const onMouseDown = (event) => {
+        if (isMoving) return; 
+        controlsRef.current.isDragging = true;
+        controlsRef.current.prevMousePos.set(event.clientX, event.clientY);
+    };
+
+    const onMouseUp = () => {
+        if (isMoving) return; 
+        controlsRef.current.isDragging = false;
+    };
+
+    const onMouseMove = (event) => {
+        if (isMoving || !controlsRef.current.isDragging) return; 
+
+        const deltaX = event.clientX - controlsRef.current.prevMousePos.x;
+        const deltaY = event.clientY - controlsRef.current.prevMousePos.y;
+
+        controlsRef.current.azimuthAngle -= deltaX * 0.005; 
+        controlsRef.current.polarAngle = Math.max(0.1, Math.min(Math.PI / 2, controlsRef.current.polarAngle - deltaY * 0.005)); 
+
+        controlsRef.current.prevMousePos.set(event.clientX, event.clientY);
+    };
+
+    useEffect(() => {
+        gl.domElement.addEventListener('mousedown', onMouseDown);
+        gl.domElement.addEventListener('mouseup', onMouseUp);
+        gl.domElement.addEventListener('mousemove', onMouseMove);
+
+        return () => {
+            gl.domElement.removeEventListener('mousedown', onMouseDown);
+            gl.domElement.removeEventListener('mouseup', onMouseUp);
+            gl.domElement.removeEventListener('mousemove', onMouseMove);
+        };
+    }, [gl.domElement, isMoving]);
+
     useFrame(() => {
-        if (avatarRef.current) {
+        if (isMoving) {
+            const idealOffset = calculateOffset();
+            const idealLookAt = calculateLookAt();
+            camera.position.copy(idealOffset);
+            camera.lookAt(idealLookAt);
+        } else if (!isMoving && controlsRef.current.isDragging) {
             const idealOffset = calculateOffset();
             const idealLookAt = calculateLookAt();
             camera.position.copy(idealOffset);
@@ -33,7 +79,5 @@ export default function ThirdPersonCamera({ avatarRef }) {
         }
     });
 
-    return (
-        null
-    );
+    return null;
 }

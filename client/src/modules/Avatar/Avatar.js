@@ -3,13 +3,13 @@ import { useGLTF, useAnimations } from '@react-three/drei'
 import { useFrame, useThree } from 'react-three-fiber'
 import * as THREE from 'three'
 
-export function Avatar({ group, setBaseUrl }) {
+export function Avatar({ group, setBaseUrl, setIsMoving }) {
     const { nodes, materials, animations } = useGLTF('/models/Avatar.glb')
     const { actions } = useAnimations(animations, group)
     const [keys, setKeys] = useState({})
     const { gl, scene, camera } = useThree();
 
-    const speed = 5
+    const speed = 0.1
     const rotationSpeed = 0.05;
 
     const handleKeyDown = (event) => {
@@ -83,6 +83,7 @@ export function Avatar({ group, setBaseUrl }) {
             actions['Still']?.play();
         }
         actions['Still']?.play()
+        setIsMoving(isMoving)
     });
 
     useEffect(() => {

@@ -110,9 +110,9 @@ import { useGLTF } from '@react-three/drei'
 import React from 'react'
 
 export default function SampleBase() {
-    const { scene } = useGLTF('/models/shoppingmall.glb')
+    const { scene } = useGLTF('/models/base.glb')
     return (
         <primitive object={scene} />
     )
 }
-useGLTF.preload('/models/shoppingmall.glb')
+useGLTF.preload('/models/base.glb')

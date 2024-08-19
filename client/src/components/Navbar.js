@@ -1,6 +1,6 @@
 import React from 'react'
 import { Button } from './ui/button'
-import { Signup } from './SIgnup'
+import { Signup } from '@/modules/Forms/Signup'
 
 export default function Navbar() {
     return (
