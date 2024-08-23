@@ -1,6 +1,6 @@
 import React from 'react'
 import { Button } from './ui/button'
-import { Signup } from '@/modules/Forms/Signup'
+import { Form } from '@/modules/Forms'
 
 export default function Navbar() {
     return (
@@ -10,7 +10,7 @@ export default function Navbar() {
             </div>
             <div className='w-1/2 h-full border-2 border-blue-500'>
                 <div className='flex justify-around flex-wrap items-center h-full w-1/3'>
-                    <Signup />
+                    <Form />
                     <Button variant='secondary' className='hover:bg-violet-200'>Login</Button>
                 </div>
             </div>

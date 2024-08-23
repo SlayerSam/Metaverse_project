@@ -1,89 +1,96 @@
-"use client"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import {
     Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+import { AlertDialogCancel, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader } from "@/components/ui/alert-dialog"
+import { PasswordField, ReusableField } from "./formComponents"
 import { Button } from "@/components/ui/button"
 
 
-
 const formSchema = z.object({
-    username: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
+    firstName: z.string().min(2, {
+        message: "First Name cannot be empty.",
     }),
+    lastName: z.string().min(2, {
+        message: "Last Name cannot be empty.",
+    }),
+    email: z.string().email({
+        message: "Please enter a valid email address.",
+    }),
+    password: z.string()
+        .min(8, {
+            message: "Password must be at least 8 characters.",
+        })
+        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/, {
+            message: "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.",
+        }),
 })
-
-export function Signup() {
+export default function Signup() {
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            username: "",
+            firstName: '',
+            lastName: '',
+            email: '',
+            password: ''
         },
     })
 
     const onSubmit = (e) => {
         console.log(form)
-        toast.success(form.getValues().username)
+        toast.success(form.getValues().firstName + ' ' + form.getValues().lastName)
     }
     return (
-        <AlertDialog>
-            <AlertDialogTrigger asChild>
-                <Button className='bg-purple-600 hover:bg-purple-800'>Signup</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                        <AlertDialogHeader>
-                            <h2 className="mt-10 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
-                                Join Us
-                            </h2>
-                            <AlertDialogDescription>
-                                <FormField
-                                    control={form.control}
-                                    name="username"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Username</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="shadcn" {...field} />
-                                            </FormControl>
-                                            <FormDescription>
-                                                This is your public display name.
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <AlertDialogHeader>
+                    <h2 className="mt-10 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
+                        Join Us
+                    </h2>
+                    <AlertDialogDescription>
+                        <div className="flex flex-wrap flex-col pt-4 gap-4">
+                            <div className="grid col-span-2 md:grid-flow-col gap-4 grid-flow-row">
+                                <ReusableField
+                                    form={form}
+                                    name={'firstName'}
+                                    label={'Enter your first Name'}
+                                    placeholder={'First Name'}
+                                    component={Input}
                                 />
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <Button type='submit'>Continue</Button>
-                        </AlertDialogFooter>
-                    </form>
-                </Form>
-            </AlertDialogContent>
-        </AlertDialog>
+                                <ReusableField
+                                    form={form}
+                                    name={'lastName'}
+                                    label={'Enter your last Name'}
+                                    placeholder={'Last Name'}
+                                    component={Input}
+                                />
+                            </div>
+                            <ReusableField
+                                form={form}
+                                name={'email'}
+                                label={'Enter your email'}
+                                placeholder={'Email Address'}
+                                component={Input}
+                            />
+                            <PasswordField
+                                form={form}
+                                name={'password'}
+                                label={'Enter your password'}
+                                placeholder={'Password'}
+                                component={Input}
+                            />
+                        </div>
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <Button type='submit'>Continue</Button>
+                </AlertDialogFooter>
+            </form>
+        </Form>
     )
 }
