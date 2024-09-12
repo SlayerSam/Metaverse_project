@@ -1,19 +1,16 @@
 'use client';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useRef, useState, useEffect, Suspense } from 'react';
-import { useGLTF, OrbitControls, PointerLockControls, Stats, Environment } from '@react-three/drei';
-import { Avatar } from './Avatar/Avatar';
-import * as THREE from 'three';
-import FirstPerson from './Avatar/FirstPerson';
-import ThirdPersonCamera from './Avatar/ThirdPerson';
-import FirstPersonCamera from './Avatar/FirstPerson';
+import { Canvas } from '@react-three/fiber';
+import { useRef, useState, Suspense } from 'react';
+import { Environment } from '@react-three/drei';
+import ThirdPersonCamera from './Avatar/camera/ThirdPerson';
+import FirstPersonCamera from './Avatar/camera/FirstPerson';
 import SampleBase from './Base/SampleBase';
 import { SampleBase2 } from './Base/SampleBase2';
+import { Avatar } from './Avatar';
 
 
-export default function Scene() {
+export default function Scene({ isOpen }) {
     const avatarRef = useRef();
-    const canvasRef = useRef();
     const [isFirstPerson, setIsFirstPerson] = useState(false);
     const [isMoving, setIsMoving] = useState(false);
     const [BaseUrl, setBaseUrl] = useState(true)
@@ -24,7 +21,7 @@ export default function Scene() {
 
     return (
         <>
-            <Canvas shadows ref={canvasRef}>
+            <Canvas shadows>
                 <Environment files='/models/base.hdr' />
                 {isFirstPerson ? <FirstPersonCamera avatarRef={avatarRef} isMoving={isMoving} /> : <ThirdPersonCamera avatarRef={avatarRef} isMoving={isMoving} />}
                 <Suspense fallback={null}>
@@ -32,9 +29,9 @@ export default function Scene() {
                 </Suspense>
                 <ambientLight intensity={0.5} />
                 <pointLight position={[10, 10, 100]} />
-                <Avatar group={avatarRef} setBaseUrl={setBaseUrl} canvasRef={canvasRef} setIsMoving={setIsMoving} />
+                <Avatar group={avatarRef} setBaseUrl={setBaseUrl} setIsMoving={setIsMoving} isOpen={isOpen} />
             </Canvas>
-            <button onClick={toggleCamera} style={{ position: 'absolute', top: '10px', left: '10px' }}>
+            <button onClick={toggleCamera} className='absolute top-[10px] left-[10px]'>
                 {isFirstPerson ? 'change to TPP' : 'change to FPP'}
             </button>
         </>

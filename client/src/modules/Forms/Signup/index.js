@@ -7,7 +7,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
 import { AlertDialogCancel, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader } from "@/components/ui/alert-dialog"
-import { PasswordField, ReusableField } from "./formComponents"
+import { PasswordField, ReusableField } from "@/components/formComponents"
 import { Button } from "@/components/ui/button"
 
 
@@ -29,7 +29,7 @@ const formSchema = z.object({
             message: "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.",
         }),
 })
-export default function Signup() {
+export default function Signup({ next }) {
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -42,6 +42,7 @@ export default function Signup() {
 
     const onSubmit = (e) => {
         console.log(form)
+        next((prev) => { return prev + 1 })
         toast.success(form.getValues().firstName + ' ' + form.getValues().lastName)
     }
     return (

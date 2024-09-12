@@ -4,8 +4,7 @@ import { useFrame, useThree } from 'react-three-fiber';
 import * as THREE from 'three';
 
 export default function FirstPersonCamera({ avatarRef }) {
-    const { camera } = useThree();
-
+    const { camera } = useThree()
     const calculateOffset = () => {
         const idealOffset = new THREE.Vector3(0, 3, 0);
         if (avatarRef.current) {
@@ -30,7 +29,7 @@ export default function FirstPersonCamera({ avatarRef }) {
         const idealOffset = calculateOffset();
         const idealLookAt = calculateLookAt();
 
-        camera.position.copy(idealOffset);
+        camera.position.lerp(idealOffset, 0.025);
         camera.lookAt(idealLookAt);
     });
 
