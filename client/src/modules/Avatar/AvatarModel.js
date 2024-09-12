@@ -2,11 +2,6 @@ import React, { useEffect } from 'react';
 import * as THREE from 'three'
 
 export function AvatarModel({ group, nodes, materials, color, armLengthScale = 1, armWidthScale = 1, ...props }) {
-
-    useEffect(() => {
-        // Update the rotation of the node
-        nodes['mixamorig1Neck'].rotation.set(0.4, 0, 0);
-    }, [nodes]);
     return (
         <group ref={group} {...props} dispose={null}>
             <group name="Scene">

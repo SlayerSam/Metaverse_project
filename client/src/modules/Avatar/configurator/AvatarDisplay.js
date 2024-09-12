@@ -17,9 +17,10 @@ export default function AvatarDisplay({ form }) {
     useEffect(() => {
         document.addEventListener('mousemove', function (e) {
             var mousecoords = getMousePos(e);
-            if (nodes['mixamorig1Head']) {
+            console.log(nodes)
+            if (nodes['mixamorig1Head'] && nodes['mixamorig1Spine']) {
                 moveJoint(mousecoords, nodes['mixamorig1Head'], 50);
-                // moveJoint(mousecoords, waist, 30);
+                moveJoint(mousecoords, nodes['mixamorig1Spine'], 30);
             }
         });
         return () => {
