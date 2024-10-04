@@ -1,81 +1,53 @@
 import { useFrame, useThree } from '@react-three/fiber';
 import { useRef, useEffect } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from 'three-stdlib';
 
 export default function ThirdPersonCamera({ avatarRef, isMoving }) {
     const { camera, gl } = useThree();
-    const controlsRef = useRef({
-        isDragging: false,
-        prevMousePos: new THREE.Vector2(),
-        azimuthAngle: 30,
-        polarAngle: Math.PI / 4,
-        distance: 8,
-    });
+    const controlsRef = useRef();
+    const avatarPos = new THREE.Vector3(0, 1, 0); // Offset to follow the avatar from above
 
-    const calculateOffset = () => {
-        const idealOffset = new THREE.Vector3(0, 0, -controlsRef.current.distance);
-        idealOffset.applyAxisAngle(new THREE.Vector3(1, 0, 0), controlsRef.current.polarAngle);
-        idealOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), controlsRef.current.azimuthAngle);
+    // Function to keep camera behind the avatar
+    const updateCameraPosition = () => {
         if (avatarRef.current) {
-            idealOffset.add(avatarRef.current.position);
+            const avatarPosition = avatarRef.current.position.clone();
+
+            // Adjust the camera offset to follow behind the avatar
+            const cameraOffset = new THREE.Vector3(0, 2, -2); // Negative Z to follow behind the avatar
+            cameraOffset.applyQuaternion(avatarRef.current.quaternion); // Align with avatar's rotation
+
+            avatarPosition.add(cameraOffset); // Add offset to avatar's position
+            camera.position.lerp(avatarPosition, 0.1); // Smooth follow
+            camera.lookAt(avatarRef.current.position); // Always look at the avatar
         }
-        return idealOffset;
     };
 
-    const calculateLookAt = () => {
-        const idealLookAt = new THREE.Vector3(0, 1, 0);
-        if (avatarRef.current) {
-            idealLookAt.add(avatarRef.current.position);
-        }
-        return idealLookAt;
-    };
 
-    const onDoubleCLick = (event) => {
-        if (isMoving) return;
-        controlsRef.current.isDragging = true;
-        controlsRef.current.prevMousePos.set(event.clientX, event.clientY);
-    };
-
-    const onMouseUp = () => {
-        if (isMoving) return;
-        controlsRef.current.isDragging = false;
-    };
-
-    const onMouseMove = (event) => {
-        if (isMoving || !controlsRef.current.isDragging) return;
-
-        const deltaX = event.clientX - controlsRef.current.prevMousePos.x;
-        const deltaY = event.clientY - controlsRef.current.prevMousePos.y;
-
-        controlsRef.current.azimuthAngle -= deltaX * 0.005;
-        controlsRef.current.polarAngle = Math.max(0.1, Math.min(Math.PI / 2, controlsRef.current.polarAngle - deltaY * 0.005));
-
-        controlsRef.current.prevMousePos.set(event.clientX, event.clientY);
-    };
-
+    // OrbitControls should allow free camera rotation around the avatar
     useEffect(() => {
-        gl.domElement.addEventListener('dblclick', onDoubleCLick);
-        gl.domElement.addEventListener('mouseup', onMouseUp);
-        gl.domElement.addEventListener('mousemove', onMouseMove);
+        const controls = new OrbitControls(camera, gl.domElement);
+        controlsRef.current = controls;
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.1;
+        controls.maxPolarAngle = Math.PI / 2.5; // Restrict vertical rotation
+        controls.minPolarAngle = 0.3; // Limit to a reasonable angle above the character
+        controls.enablePan = false; // Prevent the camera from panning
 
         return () => {
-            gl.domElement.removeEventListener('dblclick', onDoubleCLick);
-            gl.domElement.removeEventListener('mouseup', onMouseUp);
-            gl.domElement.removeEventListener('mousemove', onMouseMove);
+            controls.dispose();
         };
-    }, [gl.domElement, isMoving]);
+    }, [camera, gl.domElement]);
 
+    // Update the camera and controls in every frame
     useFrame(() => {
         if (isMoving) {
-            const idealOffset = calculateOffset();
-            const idealLookAt = calculateLookAt();
-            camera.position.lerp(idealOffset, 0.025);
-            camera.lookAt(idealLookAt);
-        } else if (!isMoving && controlsRef.current.isDragging) {
-            const idealOffset = calculateOffset();
-            const idealLookAt = calculateLookAt();
-            camera.position.lerp(idealOffset, 0.025);
-            camera.lookAt(idealLookAt);
+            updateCameraPosition();
+        }
+
+        if (controlsRef.current) {
+            controlsRef.current.target.copy(avatarRef.current ? avatarRef.current.position : avatarPos); // Follow avatar position
+            controlsRef.current.update(); // Orbit around the avatar
         }
     });
 

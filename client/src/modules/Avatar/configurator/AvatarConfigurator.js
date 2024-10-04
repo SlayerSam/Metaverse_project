@@ -20,8 +20,23 @@ export default function Configuration({ form }) {
                             <div className="flex flex-col w-full">
                                 <ColorField
                                     form={form}
-                                    name={'color'}
-                                    label={'Pick avatar color'}
+                                    name={'hairColor'}
+                                    label={'Avatar Hair color'}
+                                />
+                                <ColorField
+                                    form={form}
+                                    name={'shirtColor'}
+                                    label={'Avatar Shirt color'}
+                                />
+                                <ColorField
+                                    form={form}
+                                    name={'pantColor'}
+                                    label={'Avatar Pant color'}
+                                />
+                                <ColorField
+                                    form={form}
+                                    name={'shoesColor'}
+                                    label={'Avatar Shoes color'}
                                 />
                                 <SlideField
                                     form={form}

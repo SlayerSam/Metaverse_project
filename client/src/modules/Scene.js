@@ -22,7 +22,7 @@ export default function Scene({ isOpen }) {
     return (
         <>
             <Canvas shadows>
-                <Environment files='/models/base.hdr' />
+                <Environment preset='night' />
                 {isFirstPerson ? <FirstPersonCamera avatarRef={avatarRef} isMoving={isMoving} /> : <ThirdPersonCamera avatarRef={avatarRef} isMoving={isMoving} />}
                 <Suspense fallback={null}>
                     {BaseUrl ? <SampleBase /> : <SampleBase2 />}

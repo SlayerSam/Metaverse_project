@@ -17,7 +17,10 @@ export default function AvatarConfigurator() {
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            color: '#ffffff',
+            hairColor: '#000000',
+            shirtColor: '#ff0000',
+            pantColor: '#00ff00',
+            shoesColor: '#ffffff',
             left_arm: 50,
         },
     })
@@ -26,9 +29,9 @@ export default function AvatarConfigurator() {
 
             <div className='w-1/2 min-h-[550px] flex justify-center items-center'>
                 <Canvas shadows className='flex justify-center items-center' camera={{ position: [0, 0, 5], near: 0.1, far: 1000 }} >
-                    <Environment files='/models/base.hdr' />
+                    <Environment preset='forest' />
                     <pointLight position={[10, 10, 100]} />
-                    <ambientLight intensity={0.9} />
+                    <ambientLight intensity={5} />
                     <AvatarDisplay form={form} />
                 </Canvas>
             </div>

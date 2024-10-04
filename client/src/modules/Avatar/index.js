@@ -37,9 +37,9 @@ export function Avatar({ group, setBaseUrl, setIsMoving, isOpen }) {
             const distance = Math.floor(group.current.position.distanceTo(selectedObject.position));
 
             if (selectedObject.name === 'Cube006' && distance <= 7) {
-                actions['Select'].play();
+                actions['select'].play();
                 setTimeout(() => {
-                    actions['Select'].stop();
+                    actions['select'].stop();
                     setBaseUrl(false);
                 }, 900);
             }
@@ -51,9 +51,9 @@ export function Avatar({ group, setBaseUrl, setIsMoving, isOpen }) {
         let isMoving = false;
         const direction = new THREE.Vector3();
         const camera = state.camera;
+        console.log(actions)
 
 
-        const head = group.current.getObjectByName('Head');
         group.current.getWorldDirection(direction);
         direction.y = 0;
         direction.normalize();
@@ -79,13 +79,13 @@ export function Avatar({ group, setBaseUrl, setIsMoving, isOpen }) {
         }
 
         if (isMoving) {
-            actions['Walking'].play();
-            actions['Stand'].stop()
+            actions['walking'].play();
+            actions['idle'].stop()
         } else {
-            actions['Walking'].stop();
-            actions['Stand'].play()
+            actions['walking'].stop();
+            actions['idle'].play()
         }
-        actions['Stand'].play()
+        actions['idle'].play()
         setIsMoving(isMoving)
     });
 
