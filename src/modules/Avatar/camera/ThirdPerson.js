@@ -33,6 +33,7 @@ export default function ThirdPersonCamera({ avatarRef, isMoving }) {
         controls.maxPolarAngle = Math.PI / 2.5; // Restrict vertical rotation
         controls.minPolarAngle = 0.3; // Limit to a reasonable angle above the character
         controls.enablePan = false; // Prevent the camera from panning
+        controls.enableZoom = false
 
         return () => {
             controls.dispose();
@@ -46,8 +47,8 @@ export default function ThirdPersonCamera({ avatarRef, isMoving }) {
         }
 
         if (controlsRef.current) {
-            controlsRef.current.target.copy(avatarRef.current ? avatarRef.current.position : avatarPos); // Follow avatar position
-            controlsRef.current.update(); // Orbit around the avatar
+            controlsRef.current.target.copy(avatarRef.current ? avatarRef.current.position : avatarPos); 
+            controlsRef.current.update();
         }
     });
 

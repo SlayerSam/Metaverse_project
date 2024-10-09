@@ -14,7 +14,7 @@ import AvatarConfigurator from "../Avatar/configurator"
 
 
 export function Form({ setIsOpen }) {
-    const [step, setStep] = useState(1)
+    const [step, setStep] = useState(0)
 
     return (
         <AlertDialog onOpenChange={setIsOpen}>

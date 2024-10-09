@@ -72,9 +72,9 @@ export function ColorField({
             name={name}
             render={({ field }) => (
                 <FormItem>
-                    <FormLabel className="block text-sm font-medium mb-2 dark:text-white">{label}</FormLabel>
+                    <FormLabel className="block text-sm font-medium mb-2 ">{label}</FormLabel>
                     <FormControl className='flex justify-center items-center w-full'>
-                        <Input type="color" {...field} className="p-1 h-10 w-14 block bg-white border border-gray-200 cursor-pointer rounded-lg disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700" id="hs-color-input" title="Choose your color" />
+                        <Input type="color" {...field} className="p-1 h-10 w-14 block bg-white border border-gray-200 cursor-pointer rounded-lg disabled:opacity-50 disabled:pointer-events-none" id="hs-color-input" title="Choose your color" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>

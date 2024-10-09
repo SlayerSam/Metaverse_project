@@ -41,7 +41,6 @@ export default function Signup({ next }) {
     })
 
     const onSubmit = (e) => {
-        console.log(form)
         next((prev) => { return prev + 1 })
         toast.success(form.getValues().firstName + ' ' + form.getValues().lastName)
     }
