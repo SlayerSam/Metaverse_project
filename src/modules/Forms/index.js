@@ -9,10 +9,6 @@ import Signup from "./Signup"
 import { useState } from "react"
 import AvatarConfigurator from "../Avatar/configurator"
 
-
-
-
-
 export function Form({ setIsOpen }) {
     const [step, setStep] = useState(0)
 
