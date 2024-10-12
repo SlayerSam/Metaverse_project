@@ -1,6 +1,6 @@
 import React from 'react'
 import { Button } from './ui/button'
-import { Form } from '@/modules/Forms'
+import { Form } from '@/modules/Form'
 
 export default function Navbar({ setIsOpen }) {
     return (

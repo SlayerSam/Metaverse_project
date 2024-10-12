@@ -5,9 +5,10 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import Signup from "./Signup"
 import { useState } from "react"
 import AvatarConfigurator from "../Avatar/configurator"
+import Signup from "./Signup"
+
 
 export function Form({ setIsOpen }) {
     const [step, setStep] = useState(0)

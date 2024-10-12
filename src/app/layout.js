@@ -4,6 +4,7 @@ import { Inter as FontSans } from "next/font/google"
 import { cn } from "@/lib/utils"
 import { ThemeProvider } from "next-themes"
 import { Toaster } from "sonner"
+import ReduxProvider from "@/redux/redux-provider"
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -20,15 +21,18 @@ export default function RootLayout({ children }) {
           fontSans.variable
         )}
       >
-        <Toaster richColors position="top-right" />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <ReduxProvider>
+
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Toaster richColors position="top-right" />
+            {children}
+          </ThemeProvider>
+        </ReduxProvider>
       </body>
     </html>
   )
