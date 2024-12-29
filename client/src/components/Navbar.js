@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react'
 import { Form } from '@/modules/Form'
 import { useDispatch, useSelector } from 'react-redux'
-import { signOut } from 'firebase/auth';
-import { auth, db } from '../utils/firebase';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
 import { resetUser } from '@/redux/slices/userSlice';
@@ -17,14 +15,9 @@ export default function Navbar({ setIsOpen, setIsFirstPerson, isOpen }) {
     const signOutUser = async () => {
         try {
             if (user?.roomId) {
-                // const roomRef = db.collection('rooms').doc(user.roomId);
-
-                // await roomRef.update({
-                //     users: admin.firestore.FieldValue.arrayRemove(user.id),
-                // });
+                
             }
 
-            await signOut(auth);
             dispatch(resetUser(userInitialState))
             toast.success('Logged out successfully')
         } catch (error) {
