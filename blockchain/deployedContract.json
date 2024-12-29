@@ -1,0 +1,150 @@
+{
+  "address": "0x796a42aE7BCE826C03A2484C90604A90a93F3dD1",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "userAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "email",
+          "type": "string"
+        }
+      ],
+      "name": "UserRegistered",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "getAllUsers",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_userAddress",
+          "type": "address"
+        }
+      ],
+      "name": "getUser",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_email",
+          "type": "string"
+        }
+      ],
+      "name": "getUserByEmail",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "email",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "password",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "created_at",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct Auth.User",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_email",
+          "type": "string"
+        }
+      ],
+      "name": "isUserPresent",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_email",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "password",
+          "type": "string"
+        }
+      ],
+      "name": "registerUser",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
+}

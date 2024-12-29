@@ -4,7 +4,8 @@ export const userInitialState = {
   createdAt: null,
   email: null,
   name: null,
-  token: null,
   lastLoginAt: null,
-  userId: null,
+  address: null,
+  roomId: null,
+  id: null,
 };

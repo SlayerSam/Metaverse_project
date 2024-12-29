@@ -1,0 +1,26 @@
+{
+  "42c1fc76cbf606109cb548cdecc33bd5": {
+    "id": "42c1fc76cbf606109cb548cdecc33bd5",
+    "users": [
+      "7c12f33fd4d96e1812560520d7f7d2e9",
+      "b34f03479a9c8193e9ef7c1726c61ca6"
+    ],
+    "capacity": 4,
+    "createdAt": 1735307515776,
+    "lastEmptyTimestamp": 1735307515776
+  },
+  "784950384034157e240f6a566b52dad3": {
+    "id": "784950384034157e240f6a566b52dad3",
+    "users": [],
+    "capacity": 5,
+    "createdAt": 1735390826512,
+    "lastEmptyTimestamp": 1735390826512
+  },
+  "418aea9c939bec420ce9d58f69fcb21c": {
+    "id": "418aea9c939bec420ce9d58f69fcb21c",
+    "users": [],
+    "capacity": 5,
+    "createdAt": 1735392750358,
+    "lastEmptyTimestamp": 1735392750358
+  }
+}

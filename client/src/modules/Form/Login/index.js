@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { setUser } from "@/redux/slices/userSlice";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
-import { createRoom } from "@/components/WebSocketClient";
+import { createRoom, getSocket, login } from "@/components/WebSocketClient";
 
 const formSchema = z.object({
     email: z.string().email({
@@ -27,7 +27,7 @@ const formSchema = z.object({
         }),
 });
 
-export default function Login({ next }) {
+export default function Login({ next, setIsOpen }) {
     const dispatch = useDispatch()
     const [isLoading, setIsLoading] = useState(false)
     const form = useForm({
@@ -42,38 +42,36 @@ export default function Login({ next }) {
         try {
             if (!isLoading) {
                 setIsLoading(true)
-                const response = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        email: formData.email,
-                        password: formData.password,
-                    }),
+                const { response, err } = await login({
+                    email: formData.email,
+                    password: formData.password,
                 });
-                const data = await response.json();
+                if (err) {
+                    toast.error(err?.reason || err)
+                    return;
+                }
+                const { loginData } = response
                 const obj = {}
-                if (response.ok) {
-                    obj.email = data.user.email;
-                    obj.name = data.user.displayName;
-                    obj.createdAt = data.user.createdAt;
-                    obj.lastLoginAt = data.user.lastLoginAt;
-                    obj.authenticated = response.ok;
-                    obj.avatar = null;
-                    obj.userId = data.user.uid;
-                    obj.token = data.user.stsTokenManager.accessToken;
+                if (loginData) {
+                    obj.email = loginData.email;
+                    obj.name = loginData.displayName;
+                    obj.createdAt = loginData.createdAt;
+                    obj.lastLoginAt = loginData.lastLogin;
+                    obj.authenticated = true;
+                    obj.avatar = loginData.avatar;
+                    obj.id = loginData.id;
                     dispatch(setUser(obj));
                     try {
                         await createRoom().then(() => {
                             toast.success('User Logged in successfully');
-                            next(false)
+                            next((prev) => prev + 1)
                             setIsLoading(false)
                         })
                     } catch (error) {
                         console.error('room creation', error);
                     }
-
                 } else {
-                    toast.error(data.error || 'Error during login');
+                    toast.error(loginData?.error || 'Error during login');
                     setIsLoading(false)
                 }
             }
@@ -111,7 +109,7 @@ export default function Login({ next }) {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel onClick={() => next(false)}>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel onClick={() => setIsOpen(false)}>Cancel</AlertDialogCancel>
                     <Button type='submit'>Continue</Button>
                 </AlertDialogFooter>
             </form>

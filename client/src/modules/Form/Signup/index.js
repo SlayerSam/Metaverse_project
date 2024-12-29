@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { AlertTitle } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/slices/userSlice";
-import { createRoom } from "@/components/WebSocketClient";
+import { createRoom, signup } from "@/components/WebSocketClient";
 
 const formSchema = z.object({
     firstName: z.string().min(2, {
@@ -48,26 +48,27 @@ export default function Signup({ next }) {
     const onSubmit = async (formData, e) => {
         e.preventDefault();
         try {
-            const response = await fetch('/api/auth/signup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: formData.firstName + ' ' + formData.lastName,
-                    email: formData.email,
-                    password: formData.password,
-                }),
-            });
-            const data = await response.json();
+            const { response, address, err } = await signup({
+                name: formData.firstName + ' ' + formData.lastName,
+                email: formData.email,
+                password: formData.password,
+            })
+            if (err) {
+                toast.error(err?.reason || err?.message)
+                return;
+            }
+            const { signupData } = response
             const obj = {}
-            if (response.ok && data?.user) {
-                obj.email = data.user.email;
-                obj.name = data.user.displayName;
-                obj.createdAt = data.user.createdAt;
-                obj.lastLoginAt = data.user.lastLoginAt;
-                obj.authenticated = response.ok;
+            if (signupData) {
+                obj.email = signupData.email;
+                obj.name = signupData.displayName;
+                obj.createdAt = signupData.createdAt;
+                obj.lastLoginAt = signupData.lastLogin;
+                obj.authenticated = true;
                 obj.avatar = null;
-                obj.userId = data.user.uid;
-                obj.token = data.user.stsTokenManager.accessToken;
+                obj.roomId = null;
+                obj.address = address;
+                obj.id = signupData.id;
                 dispatch(setUser(obj));
                 try {
                     await createRoom().then(() => {
@@ -75,6 +76,7 @@ export default function Signup({ next }) {
                         next((prev) => prev + 1);
                     })
                 } catch (error) {
+                    toast.error()
                     console.error('room creation', error);
                 }
             } else {

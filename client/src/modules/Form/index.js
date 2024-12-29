@@ -41,12 +41,16 @@ export function Form({ isOpen, setIsOpen }) {
                     )
                         :
                         (
-                            <Login next={setIsOpen} />
+                            <>
+                                {
+                                    step == 0 && <Login next={setStep} setIsOpen={setIsOpen} />
+                                }
+                                {
+                                    step == 1 && <RoomList setIsOpen={setIsOpen} />
+                                }
+                            </>
                         )
                 }
-
-
-
             </AlertDialogContent>
         </AlertDialog>
     )

@@ -9,6 +9,8 @@ export function AvatarModel({
     shirtColor = '#ff0000',
     pantColor = '#0000ff',
     shoesColor = '#ffffff',
+    position,
+    rotation,
     ...props
 }) {
     const shirtMaterial = useMemo(() => {
@@ -38,7 +40,7 @@ export function AvatarModel({
     }, [shoesColor, materials.Ch42_Sneakers]);
 
     return (
-        <group ref={group} {...props} dispose={null}>
+        <group ref={group} {...props} position={position} rotation={rotation && [0, rotation, 0]} dispose={null}>
             <group name="Scene">
                 <group name="idle" rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
                     <skinnedMesh
@@ -91,7 +93,6 @@ export function AvatarModel({
                         skeleton={nodes.Ch42_Sneakers.skeleton}
                         material-color={shoesColor}
                     />
-
                     <primitive object={nodes.mixamorigHips} />
                 </group>
             </group>

@@ -1,93 +1,100 @@
-const admin = require('firebase-admin');
-const { db } = require('../utils/firebaseAdmin');
+const { rooms, users, avatars } = require("../database/db");
+const { useId } = require("../utils/db.utils");
 
-const MAX_ROOM_CAPACITY = 5; // Set the maximum capacity for each room
-const ONE_HOUR_MS = 60 * 60 * 1000; // 1 hour in milliseconds
+const MAX_ROOM_CAPACITY = 5;
 
-// Function to create a room
 async function createRoom() {
-    const roomsRef = db.collection('rooms');
-    const snapshot = await roomsRef.get();
-
-    let roomId;
-    let roomData;
-
-    if (snapshot.empty) {
-        // Create the first room
-        roomId = 'room1';
-        roomData = { id: roomId, users: [], capacity: MAX_ROOM_CAPACITY, lastEmptyTimestamp: null };
-        await roomsRef.doc(roomId).set(roomData);
-    } else {
-        // Check for available rooms
-        let foundRoom = null;
-        snapshot.forEach((doc) => {
-            const room = doc.data();
-            if (room.users.length < room.capacity) {
-                foundRoom = room;
+    try {
+        const roomId = useId()
+        if (rooms.length > 0) {
+            let flag = Object.entries(rooms).every(([key, val]) => val.capacity === 0);
+            if (flag) {
+                rooms[roomId] = {
+                    id: roomId,
+                    users: [],
+                    capacity: MAX_ROOM_CAPACITY,
+                    createdAt: Date.now(),
+                    lastEmptyTimestamp: Date.now(),
+                }
             }
-        });
-
-        if (foundRoom) {
-            roomId = foundRoom.id;
-            roomData = foundRoom;
-        } else {
-            // All rooms are full, create a new room
-            roomId = `room${snapshot.size + 1}`;
-            roomData = { id: roomId, users: [], capacity: MAX_ROOM_CAPACITY, lastEmptyTimestamp: null };
-            await roomsRef.doc(roomId).set(roomData);
         }
-    }
-
-    return roomData;
-}
-
-// Function to fetch all rooms
-async function fetchRooms() {
-    const roomsRef = db.collection('rooms');
-    const snapshot = await roomsRef.get();
-    return snapshot.docs.map(doc => doc.data());
-}
-
-// Function to delete empty rooms older than 1 hour
-async function deleteOldEmptyRooms() {
-    const roomsRef = db.collection('rooms');
-    const snapshot = await roomsRef.get();
-
-    const now = Date.now();
-    snapshot.forEach(async (doc) => {
-        const room = doc.data();
-        if (room.users.length === 0 && room.lastEmptyTimestamp) {
-            const timeSinceEmpty = now - room.lastEmptyTimestamp.toMillis();
-            if (timeSinceEmpty > ONE_HOUR_MS) {
-                await roomsRef.doc(room.id).delete();
+        else {
+            rooms[roomId] = {
+                id: roomId,
+                users: [],
+                capacity: MAX_ROOM_CAPACITY,
+                createdAt: Date.now(),
+                lastEmptyTimestamp: Date.now(),
             }
+        }
+    } catch (error) {
+        console.error('Error creating room:', error);
+        throw error;
+    }
+}
+
+const getUserById = (id) => {
+    let val = null;
+    Object.entries(users).forEach(([key, user], index) => {
+        if (user.id === id) {
+            val = user.avatar;
+        }
+    })
+    return val
+}
+
+async function fetchRooms() {
+    let roomsWithAvatars = Object.entries(rooms).map(([key, val]) => {
+        let avatarsArr = [];
+        if (val.users.length > 0) {
+            val.users.forEach(user => {
+                avatarsArr.push(avatars[getUserById(user)]);
+            });
+            return {
+                ...val,
+                avatars: avatarsArr
+            };
+        } else {
+            return {
+                ...val,
+                avatars: []
+            };
         }
     });
+    return roomsWithAvatars;
+}
+
+
+async function deleteOldEmptyRooms(roomId) {
+    try {
+        const oneHourAgo = Date.now() - 60 * 60 * 1000; // Current time minus 1 hour
+        Object.entries(rooms).forEach(([key, val]) => {
+            if (val.capacity === 5 && val.lastEmptyTimestamp <= oneHourAgo && val.id != roomId) {
+                delete rooms[key];
+            }
+        });
+    } catch (error) {
+        console.error('Error deleting old empty rooms:', error);
+        throw error;
+    }
 }
 
 // Function to join a room
-async function joinRoom(roomId, userId) {
-    await deleteOldEmptyRooms(); // Clean up old empty rooms
-
-    const roomRef = db.collection('rooms').doc(roomId);
-    const roomDoc = await roomRef.get();
-
-    if (roomDoc.exists) {
-        const roomData = roomDoc.data();
-        if (roomData.users.length < roomData.capacity) {
-            await roomRef.update({
-                users: admin.firestore.FieldValue.arrayUnion(userId),
-                lastEmptyTimestamp: null, // Reset since room is no longer empty
-            });
-            return roomData;
-        } else {
-            throw new Error('Room is full');
+async function joinRoom(roomId, userId, socketId) {
+    try {
+        await deleteOldEmptyRooms(roomId);
+        users[socketId].roomId = roomId;
+        console.log(rooms[roomId].users);
+        if (!rooms[roomId].users.includes(userId)) {
+            rooms[roomId].users = [...rooms[roomId].users, userId];
+            rooms[roomId].capacity -= 1;
         }
-    } else {
-        throw new Error('Room does not exist');
+    } catch (error) {
+        console.error('Error joining room:', error);
+        throw error;
     }
 }
 
 
 
-module.exports = { createRoom, joinRoom, fetchRooms }
+module.exports = { createRoom, joinRoom, fetchRooms };

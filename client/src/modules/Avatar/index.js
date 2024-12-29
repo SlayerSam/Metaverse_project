@@ -1,22 +1,37 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
-import { useFrame, useThree } from 'react-three-fiber';
+import { useFrame, useGraph, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { AvatarModel } from './AvatarModel';
+import { SkeletonUtils } from 'three-stdlib';
+import { useSelector } from 'react-redux';
+import { playerMovement } from '@/components/WebSocketClient';
 
 export function Avatar({ group, setIsMoving, isFirstPerson, isOpen }) {
-    const { nodes, materials, animations } = useGLTF('/models/Avatar.glb');
-    const { actions, mixer } = useAnimations(animations, group); // Get mixer for handling events
+    const { user } = useSelector((state) => state.user);
+    const { scene, materials, animations } = useGLTF('/models/Avatar.glb');
+    const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
+    const { nodes } = useGraph(clone);
+    const { actions, mixer } = useAnimations(animations, group);
     const [keys, setKeys] = useState({});
     const [isJumping, setIsJumping] = useState(false);
-    const [velocityY, setVelocityY] = useState(0); // Keep track of jump velocity
+    const [velocityY, setVelocityY] = useState(0);
+    const [animation, setAnimation] = useState('idle');
     const { camera } = useThree();
 
-    const speed = 0.1;
+    const speed = 0.01;
     const rotationSpeed = 0.05;
-    const jumpSpeed = 0.15; // Speed at which avatar jumps
-    const gravity = 0.01; // Gravity factor
+    const jumpSpeed = 0.2;
+    const gravity = 0.02;
 
+    useEffect(() => {
+        clone.traverse((child) => {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+            }
+        });
+    }, []);
     const handleKeyDown = (event) => {
         setKeys((prevKeys) => ({ ...prevKeys, [event.code]: true }));
     };
@@ -25,27 +40,46 @@ export function Avatar({ group, setIsMoving, isFirstPerson, isOpen }) {
         setKeys((prevKeys) => ({ ...prevKeys, [event.code]: false }));
     };
 
+    useEffect(() => {
+        if (isOpen) return;
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keyup', handleKeyUp);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('keyup', handleKeyUp);
+        };
+    }, [isOpen]);
+
+    useEffect(() => {
+        actions[animation].reset().fadeIn(0.32).play();
+        return () => actions[animation]?.fadeOut(0.32);
+    }, [animation]);
+
+    async function movement(movementData) {
+        await playerMovement(movementData)
+    }
+
     useFrame(() => {
         if (isOpen) return;
 
         const direction = new THREE.Vector3();
-        const headNode = nodes['mixamorigHead']; // Use your head node directly
+        const headNode = nodes['mixamorigHead'];
 
-        // Get the direction the avatar is facing
         group.current.getWorldDirection(direction);
-        direction.y = 0; // Ignore the vertical direction
+        direction.y = 0;
         direction.normalize();
 
-        // Move the avatar based on key inputs
         let isMoving = false;
+
         if (!isJumping) {
             if (keys['ArrowUp'] || keys['KeyW']) {
-                group.current.position.add(direction.clone().multiplyScalar(speed));
+                group.current.position.add(direction.clone().normalize().multiplyScalar(speed));
                 isMoving = true;
             }
 
             if (keys['ArrowDown'] || keys['KeyS']) {
-                group.current.position.add(direction.clone().multiplyScalar(-speed));
+                group.current.position.add(direction.clone().normalize().multiplyScalar(-speed));
                 isMoving = true;
             }
 
@@ -60,66 +94,62 @@ export function Avatar({ group, setIsMoving, isFirstPerson, isOpen }) {
             }
         }
 
-        // Jump logic (manual control of jump movement)
-        if (keys['Space'] && !isJumping && group.current.position.y <= 0) {
+        if (keys['Space'] && !isJumping) {
             setIsJumping(true);
-            actions['jump'].play();
-            setVelocityY(jumpSpeed); // Set initial jump speed
-
-            // Play the jump animation without affecting the position
-            actions['jump'].reset().play().setLoop(THREE.LoopOnce, 1);
-            mixer.addEventListener('finished', () => {
-                actions['jump'].stop(); // Stop the jump animation after it's finished
-            });
+            setAnimation('jump')
+            setVelocityY(jumpSpeed);
         }
 
-        // Apply gravity and update vertical position
         if (isJumping) {
             group.current.position.y += velocityY;
-            setVelocityY((v) => v - gravity); // Apply gravity to slow down jump
+            setVelocityY((v) => v - gravity);
 
-            // If avatar lands on the ground
             if (group.current.position.y <= 0) {
-                group.current.position.y = 0; // Ensure avatar stays on the ground
-                setIsJumping(false); // Allow jumping again
-                setVelocityY(0); // Reset velocity
+                group.current.position.y = 0;
+                setIsJumping(false);
+                setVelocityY(0);
             }
         }
 
-        // Set camera position and rotation based on head node
         if (headNode && isFirstPerson) {
             const headPosition = new THREE.Vector3();
             headNode.getWorldPosition(headPosition);
             camera.position.copy(headPosition);
-
-            // Adjust camera's rotation to match head rotation
             camera.rotation.copy(headNode.rotation);
         }
 
-        // Update animations based on movement
         if (isMoving && !isJumping) {
-            actions['walking'].play();
-            actions['idle'].stop();
+            setAnimation('walking')
         } else if (!isMoving && !isJumping) {
-            actions['walking'].stop();
-            actions['idle'].play();
+            setAnimation('idle')
         }
 
-        setIsMoving(isMoving || isJumping); // Update moving state including jump
+        if (user && group.current)
+            setTimeout(() => {
+                movement({
+                    roomId: user?.roomId,
+                    userId: user?.id,
+                    position: group.current.position,
+                    rotation: group.current.rotation.y,
+                    isJumping,
+                    isMoving
+                })
+            }, 1000)
+
+        setIsMoving(isMoving || isJumping);
     });
 
-    useEffect(() => {
-        if (isOpen) return;
-        window.addEventListener('keydown', handleKeyDown);
-        window.addEventListener('keyup', handleKeyUp);
-
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-            window.removeEventListener('keyup', handleKeyUp);
-        };
-    }, [isOpen]);
-
-    return <AvatarModel nodes={nodes} group={group} materials={materials} />;
+    return (
+        <AvatarModel
+            nodes={nodes}
+            group={group}
+            materials={materials}
+            hairColor={user?.avatar?.hairColor}
+            shirtColor={user?.avatar?.shirtColor}
+            pantColor={user?.avatar?.pantColor}
+            shoesColor={user?.avatar?.shoesColor}
+        />
+    );
 }
 
 useGLTF.preload('/models/Avatar.glb');

@@ -1,0 +1,34 @@
+{
+  "f745f3f40fbb3b1262678a0c37460abd": {
+    "userId": "7c12f33fd4d96e1812560520d7f7d2e9",
+    "hairColor": "#000000",
+    "shirtColor": "#3f9220",
+    "pantColor": "#00ff00",
+    "shoesColor": "#ffffff",
+    "left_arm": 50,
+    "position": {
+      "x": -4.8225493990285715,
+      "y": 0,
+      "z": 0.9826461120826961
+    },
+    "isJumping": false,
+    "isMoving": false,
+    "rotation": -2.3
+  },
+  "cc76ae60c7a9f77b41c6787ae4f11cd8": {
+    "hairColor": "#000000",
+    "shirtColor": "#3f9220",
+    "pantColor": "#00ff00",
+    "shoesColor": "#ffffff",
+    "left_arm": 50,
+    "position": {
+      "x": -16.899666726182037,
+      "y": 0,
+      "z": -6.663542682471023
+    },
+    "isJumping": false,
+    "isMoving": false,
+    "userId": "b34f03479a9c8193e9ef7c1726c61ca6",
+    "rotation": 14.150000000000068
+  }
+}

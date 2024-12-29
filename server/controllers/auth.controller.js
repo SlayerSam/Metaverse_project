@@ -1,23 +1,31 @@
-const { auth } = require('../../client/src/utils/firebase');
-const { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } = require('firebase/auth');
+const { avatars } = require('../database/db');
+const { signup, login } = require('../utils/auth.utils');
 
-async function Auth(req, resp) {
-  const { email, password, name } = req.body;
+async function login({ email, password }) {
+  const result = login(email, password)
 
-  try {
-    let userCredential;
-    if (req.params.path == 'signup') {
-      userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCredential.user, {
-        displayName: name,
-      });
-    } else {
-      userCredential = await signInWithEmailAndPassword(auth, email, password);
-    }
-    return resp.send({ user: userCredential.user }).status(200);
-  } catch (error) {
-    return resp.send({ error: error.message }).status(400);
+  if (result == 'not found') {
+    throw new Error('Could not find user')
+  }
+  if (result == 'wrong password') {
+    throw new Error('Incorrect password')
+  }
+  else {
+    result.lastLoginAt = new Date.now()
+    delete result.password;
+    result.avatar = avatars[result.avatar]
+    return result
   }
 }
 
-module.exports = { Auth };
+async function Signup({ name, email, password }) {
+  const result = signup(name, email, password)
+
+  if (result == 'server error') {
+    throw new Error('Server error')
+  }
+
+  return result
+}
+
+module.exports = { Signup, login };

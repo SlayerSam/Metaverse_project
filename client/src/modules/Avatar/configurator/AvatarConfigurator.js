@@ -4,15 +4,22 @@ import { Form } from '@/components/ui/form'
 import { ColorField, SlideField } from '@/components/formComponents'
 import React from 'react'
 import { avatarStore } from '@/components/WebSocketClient'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { setUser } from '@/redux/slices/userSlice'
 
 export default function Configuration({ form, next }) {
     const { user } = useSelector((state) => state.user)
+    const dispatch = useDispatch()
     const onSubmit = async (formData, e) => {
         e.preventDefault();
-        formData.userId = user.userId
-        await avatarStore(formData).then(() => {
+        console.log(user)
+        formData.userId = user.id
+        await avatarStore(formData).then((avatarId) => {
             console.log('Avatar configuration saved');
+            let obj = { ...user }
+            delete formData.userId
+            obj.avatar = avatarId
+            dispatch(setUser(obj))
             form.reset();
             next((prev) => prev + 1)
         })

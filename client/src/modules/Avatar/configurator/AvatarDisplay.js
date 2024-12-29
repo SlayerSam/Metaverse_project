@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { AvatarModel } from '../AvatarModel';
-import { OrbitControls, useGLTF } from '@react-three/drei';
+import { OrbitControls, useAnimations, useGLTF } from '@react-three/drei';
 import { getMouseDegrees } from '@/utils/MousePosition';
 import * as THREE from 'three';
 
 export default function AvatarDisplay({ form }) {
-    const { nodes, materials } = useGLTF('/models/Avatar.glb');
     const group = useRef();
+    const { nodes, materials, animations } = useGLTF('/models/Avatar.glb');
+    const { actions } = useAnimations(animations, group)
 
     function moveJoint(mouse, joint, degreeLimit) {
         let degrees = getMouseDegrees(mouse.x, mouse.y, degreeLimit);
@@ -19,6 +20,7 @@ export default function AvatarDisplay({ form }) {
     }
 
     useEffect(() => {
+        actions['idle'].play()
         const handleMouseMove = (e) => {
             const mouseCoords = getMousePos(e);
             if (nodes && nodes["mixamorigHead"]) {
@@ -43,7 +45,8 @@ export default function AvatarDisplay({ form }) {
                 shoesColor={form.watch('shoesColor')}
                 armWidthScale={form.watch('left_arm')}
                 materials={materials}
-                position={[0, -2.8, 0]}
+                position={[0, -2.8,0]}
+                key={'display'}
             />
             <mesh position={[0, -2.8, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={[0.3, 0.3, 0.3]} receiveShadow castShadow>
                 <circleGeometry args={[5, 32]} />
