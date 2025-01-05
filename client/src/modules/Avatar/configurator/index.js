@@ -33,7 +33,8 @@ export default function AvatarConfigurator({ next }) {
             shirtColor: '#ff0000',
             pantColor: '#00ff00',
             shoesColor: '#ffffff',
-            left_arm: 50,
+            arm_length: 1,
+            arm_width: 1,
         },
     })
     return (

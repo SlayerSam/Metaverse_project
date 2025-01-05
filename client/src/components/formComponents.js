@@ -98,8 +98,8 @@ export function SlideField({
                     <FormLabel className="block text-sm font-medium mb-2 dark:text-white">{label}</FormLabel>
                     <FormControl className='flex justify-center items-center w-full'>
                         <Slider
-                            max={100}
-                            step={1}
+                            max={2}
+                            step={0.1}
                             className={cn("w-[60%]", className)}
                             placeholder={placeholder}
                             value={[field.value]}

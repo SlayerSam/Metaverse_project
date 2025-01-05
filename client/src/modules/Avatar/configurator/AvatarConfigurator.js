@@ -56,9 +56,15 @@ export default function Configuration({ form, next }) {
                                 />
                                 <SlideField
                                     form={form}
-                                    name={'left_arm'}
-                                    label={'Select arm size'}
-                                    placeholder={'Left Arm'}
+                                    name={'arm_length'}
+                                    label={'Select arm length'}
+                                    placeholder={'Arm Length'}
+                                />
+                                <SlideField
+                                    form={form}
+                                    name={'arm_width'}
+                                    label={'Select arm width'}
+                                    placeholder={'Arm Width'}
                                 />
                             </div>
                         </div>

@@ -50,7 +50,6 @@ export function AvatarModel({
                         skeleton={nodes.Ch42__Eyelashes.skeleton}
                     />
 
-                    {/* Apply body scaling to body part only */}
                     <skinnedMesh
                         name="Ch42_Body1"
                         geometry={nodes.Ch42_Body1.geometry}

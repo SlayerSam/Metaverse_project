@@ -13,8 +13,8 @@ import RoomList from "@/components/RoomList"
 
 
 export function Form({ isOpen, setIsOpen }) {
-    const [step, setStep] = useState(0)
-    const [isSignUp, setIsSignUp] = useState(false)
+    const [step, setStep] = useState(1)
+    const [isSignUp, setIsSignUp] = useState(true)
 
     return (
         <AlertDialog setIsOpen={setIsOpen} open={isOpen}>
