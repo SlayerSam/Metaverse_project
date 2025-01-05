@@ -11,6 +11,8 @@ import { useSelector } from 'react-redux';
 import { fetchRoom, getSocket, reConnectUser } from '@/components/WebSocketClient';
 import { Character } from './Avatar/Character';
 import * as THREE from 'three'
+import { generateQRCode } from '@/utils/qrcode.utils';
+import QRPlane from '@/components/QRcode';
 
 export default function Scene({ isOpen, isFirstPerson }) {
     const { user } = useSelector((state) => state.user);
@@ -19,6 +21,11 @@ export default function Scene({ isOpen, isFirstPerson }) {
     const [isMoving, setIsMoving] = useState(false);
     const [BaseUrl, setBaseUrl] = useState(true);
     const [rooms, setRooms] = useState([]);
+    const [qrCodeUrl, setQrCodeUrl] = useState('');
+
+    useEffect(() => {
+        generateQRCode('https://1d35f0fb-3000.inc1.devtunnels.ms/display/123').then((url) => setQrCodeUrl(url));
+    }, []);
 
     useEffect(() => {
         if (user) {
@@ -39,6 +46,7 @@ export default function Scene({ isOpen, isFirstPerson }) {
             <Suspense fallback={null}>
                 {BaseUrl ? <SampleBase /> : <SampleBase2 />}
             </Suspense>
+            {qrCodeUrl && <QRPlane url={qrCodeUrl} />}
 
             <ambientLight intensity={0.5} />
             <pointLight position={[10, 10, 100]} />

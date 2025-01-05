@@ -7,13 +7,13 @@
     "shoesColor": "#ffffff",
     "left_arm": 50,
     "position": {
-      "x": -4.8225493990285715,
+      "x": 0,
       "y": 0,
-      "z": 0.9826461120826961
+      "z": 0
     },
     "isJumping": false,
     "isMoving": false,
-    "rotation": -2.3
+    "rotation": 0
   },
   "cc76ae60c7a9f77b41c6787ae4f11cd8": {
     "hairColor": "#000000",

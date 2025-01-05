@@ -17,7 +17,6 @@ export default function Navbar({ setIsOpen, setIsFirstPerson, isOpen }) {
             if (user?.roomId) {
                 
             }
-
             dispatch(resetUser(userInitialState))
             toast.success('Logged out successfully')
         } catch (error) {
