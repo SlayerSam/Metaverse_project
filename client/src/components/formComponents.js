@@ -100,7 +100,7 @@ export function SlideField({
                         <Slider
                             max={2}
                             step={0.1}
-                            className={cn("w-[60%]", className)}
+                            className={cn("w-[85%] mt-2", className)}
                             placeholder={placeholder}
                             value={[field.value]}
                             onValueChange={field.onChange}

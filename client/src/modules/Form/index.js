@@ -24,7 +24,7 @@ export function Form({ isOpen, setIsOpen }) {
                     <Button variant='secondary' className='hover:bg-violet-200' onClick={() => { setIsSignUp(false); setIsOpen(true) }}>Login</Button>
                 </div>
             </AlertDialogTrigger>
-            <AlertDialogContent className='flex flex-col flex-wrap w-full'>
+            <AlertDialogContent className='flex flex-col flex-wrap min-w-fit'>
                 {
                     isSignUp ? (
                         <>

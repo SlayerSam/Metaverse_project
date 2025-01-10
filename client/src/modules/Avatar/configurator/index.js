@@ -35,11 +35,12 @@ export default function AvatarConfigurator({ next }) {
             shoesColor: '#ffffff',
             arm_length: 1,
             arm_width: 1,
+            leg_length: 1,
+            leg_width: 1,
         },
     })
     return (
-        <div className='flex w-full'>
-
+        <div className='flex w-[600px] h-full'>
             <div className='w-1/2 min-h-[550px] flex justify-center items-center'>
                 <Canvas shadows className='flex justify-center items-center' camera={{ position: [0, 0, 5], near: 0.1, far: 1000 }} >
                     <Environment preset='forest' />

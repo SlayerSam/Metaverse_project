@@ -32,8 +32,8 @@ export default function Configuration({ form, next }) {
                         Configure your Avatar
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        <div className="flex flex-wrap flex-col">
-                            <div className="flex flex-col w-full">
+                        <div className="flex flex-wrap flex-col w-full">
+                            <div className="grid grid-cols-1 md:grid-cols-2 w-full gap-y-3">
                                 <ColorField
                                     form={form}
                                     name={'hairColor'}
@@ -65,6 +65,18 @@ export default function Configuration({ form, next }) {
                                     name={'arm_width'}
                                     label={'Select arm width'}
                                     placeholder={'Arm Width'}
+                                />
+                                <SlideField
+                                    form={form}
+                                    name={'leg_length'}
+                                    label={'Select leg length'}
+                                    placeholder={'Leg Length'}
+                                />
+                                <SlideField
+                                    form={form}
+                                    name={'leg_width'}
+                                    label={'Select leg width'}
+                                    placeholder={'Leg Width'}
                                 />
                             </div>
                         </div>

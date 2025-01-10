@@ -38,6 +38,15 @@ export default function AvatarDisplay({ form }) {
             }
             console.log(`Left Hand Scale: ${nodes['mixamorigLeftHand'].scale}`);
         }
+        if (nodes && form.watch('leg_width') && form.watch('leg_length')) {
+            if (nodes['mixamorigLeftLeg']) {
+                nodes['mixamorigLeftLeg'].scale.set(form.watch('leg_width'), form.watch('leg_length'), form.watch('leg_width'));
+                nodes['mixamorigLeftUpLeg'].scale.set(form.watch('leg_width'), form.watch('leg_length'), form.watch('leg_width'));
+                nodes['mixamorigRightLeg'].scale.set(form.watch('leg_width'), form.watch('leg_length'), form.watch('leg_width'));
+                nodes['mixamorigRightUpLeg'].scale.set(form.watch('leg_width'), form.watch('leg_length'), form.watch('leg_width'));
+            }
+            console.log(`Left Hand Scale: ${nodes['mixamorigLeftLeg'].scale}`);
+        }
         if (typeof window !== 'undefined') {
             const handleMouseMove = (e) => {
                 const mouseCoords = getMousePos(e);
@@ -50,7 +59,7 @@ export default function AvatarDisplay({ form }) {
                 window.removeEventListener('mousemove', handleMouseMove);
             };
         }
-    }, [nodes, form.watch('arm_width') , form.watch('arm_length')]);
+    }, [nodes, form.watch('arm_width'), form.watch('arm_length'), form.watch('leg_length'), form.watch('leg_width')]);
 
     return (
         <>
