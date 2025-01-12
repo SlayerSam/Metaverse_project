@@ -29,7 +29,7 @@ export function Form({ isOpen, setIsOpen }) {
                     isSignUp ? (
                         <>
                             {
-                                step === 0 && <Signup next={setStep} />
+                                step === 0 && <Signup next={setStep} setIsOpen={setIsOpen} />
                             }
                             {
                                 step === 1 && <AvatarConfigurator next={setStep} />

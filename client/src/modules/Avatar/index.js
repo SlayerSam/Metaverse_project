@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
 import { useFrame, useGraph, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { AvatarModel } from './AvatarModel';
+import { MaleModel } from './AvatarModel';
 import { SkeletonUtils } from 'three-stdlib';
 import { useSelector } from 'react-redux';
 import { playerMovement } from '@/components/WebSocketClient';
@@ -32,6 +32,17 @@ export function Avatar({ group, setIsMoving, isFirstPerson, isOpen }) {
             }
         });
     }, []);
+
+    useEffect(() => {
+        if (nodes && user) {
+            nodes['mixamorigLeftArm'].scale.set(user.arm_width, user.arm_height, user.arm_width);
+            nodes['mixamorigRightArm'].scale.set(user.arm_width, user.arm_height, user.arm_width);
+            nodes['mixamorigLeftLeg'].scale.set(user.leg_width, user.leg_height, user.leg_width);
+            nodes['mixamorigLeftUpLeg'].scale.set(user.leg_width, user.leg_height, user.leg_width);
+            nodes['mixamorigRightLeg'].scale.set(user.leg_width, user.leg_height, user.leg_width);
+            nodes['mixamorigRightUpLeg'].scale.set(user.leg_width, user.leg_height, user.leg_width);
+        }
+    }, [nodes, user])
     const handleKeyDown = (event) => {
         setKeys((prevKeys) => ({ ...prevKeys, [event.code]: true }));
     };
@@ -140,7 +151,7 @@ export function Avatar({ group, setIsMoving, isFirstPerson, isOpen }) {
     });
 
     return (
-        <AvatarModel
+        <MaleModel
             nodes={nodes}
             group={group}
             materials={materials}

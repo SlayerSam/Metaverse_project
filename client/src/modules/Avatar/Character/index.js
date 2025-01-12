@@ -1,10 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useAnimations, useGLTF } from '@react-three/drei';
-import { AvatarModel } from '../AvatarModel';
+import { MaleModel } from '../AvatarModel';
 import { SkeletonUtils } from 'three-stdlib';
 import { useFrame, useGraph } from 'react-three-fiber';
 import { getSocket } from '@/components/WebSocketClient';
-import { useSelector } from 'react-redux';
 import * as THREE from 'three'
 
 export function Character({ id, hairColor, shirtColor, pantColor, shoesColor, position, isMoving, isJumping, rotation }) {
@@ -46,7 +45,7 @@ export function Character({ id, hairColor, shirtColor, pantColor, shoesColor, po
     }, [isMovingState, isJumpingState])
 
     return (
-        <AvatarModel
+        <MaleModel
             nodes={nodes}
             group={group}
             materials={materials}

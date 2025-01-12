@@ -33,7 +33,7 @@ const formSchema = z.object({
         }),
 });
 
-export default function Signup({ next }) {
+export default function Signup({ next, setIsOpen }) {
     const dispatch = useDispatch()
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -74,6 +74,7 @@ export default function Signup({ next }) {
                     await createRoom().then(() => {
                         toast.success('User signed up successfully');
                         next((prev) => prev + 1);
+                        setIsOpen(false);
                     })
                 } catch (error) {
                     toast.error()
@@ -133,7 +134,7 @@ export default function Signup({ next }) {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel onClick={() => setIsOpen(false)}>Cancel</AlertDialogCancel>
                     <Button type='submit'>Continue</Button>
                 </AlertDialogFooter>
             </form>

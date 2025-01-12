@@ -71,7 +71,7 @@ export function ColorField({
             name={name}
             render={({ field }) => (
                 <FormItem>
-                    <FormLabel className="block text-sm font-medium mb-2 ">{label}</FormLabel>
+                    <FormLabel className="block text-sm font-medium mb-2">{label}</FormLabel>
                     <FormControl className='flex justify-center items-center w-full'>
                         <Input type="color" {...field} className="p-1 h-10 w-14 block bg-white border border-gray-200 cursor-pointer rounded-lg disabled:opacity-50 disabled:pointer-events-none" id="hs-color-input" title="Choose your color" />
                     </FormControl>
@@ -87,6 +87,9 @@ export function SlideField({
     name,
     label,
     placeholder,
+    max,
+    step,
+    min,
     className
 }) {
     return (
@@ -95,12 +98,13 @@ export function SlideField({
             name={name}
             render={({ field }) => (
                 <FormItem>
-                    <FormLabel className="block text-sm font-medium mb-2 dark:text-white">{label}</FormLabel>
+                    <FormLabel className="block text-sm font-medium my-2 dark:text-white">{label}</FormLabel>
                     <FormControl className='flex justify-center items-center w-full'>
                         <Slider
-                            max={2}
-                            step={0.1}
-                            className={cn("w-[85%] mt-2", className)}
+                            min={min}
+                            max={max}
+                            step={step}
+                            className={cn("w-[85%] mt-2 py-2", className)}
                             placeholder={placeholder}
                             value={[field.value]}
                             onValueChange={field.onChange}

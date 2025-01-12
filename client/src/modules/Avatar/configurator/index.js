@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Configuration from './AvatarConfigurator'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -26,6 +26,7 @@ const formSchema = z.object({
 })
 
 export default function AvatarConfigurator({ next }) {
+    const [modelPath, setModelPath] = useState('/models/Avatar.glb');
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -37,16 +38,30 @@ export default function AvatarConfigurator({ next }) {
             arm_width: 1,
             leg_length: 1,
             leg_width: 1,
+            gender: 'male'
         },
     })
+
+    useEffect(() => {
+        const subscription = form.watch((value) => {
+            if (value.gender === 'male') {
+                setModelPath('/models/Avatar.glb');
+            } else {
+                setModelPath('/models/Female.glb');
+            }
+        });
+        return () => subscription.unsubscribe(); 
+    }, [form]);
+
+
     return (
-        <div className='flex w-[600px] h-full'>
+        <div className='flex w-[650px] h-full'>
             <div className='w-1/2 min-h-[550px] flex justify-center items-center'>
                 <Canvas shadows className='flex justify-center items-center' camera={{ position: [0, 0, 5], near: 0.1, far: 1000 }} >
                     <Environment preset='forest' />
                     <pointLight position={[10, 10, 100]} />
                     <ambientLight intensity={5} />
-                    <AvatarDisplay form={form} />
+                    <AvatarDisplay form={form} modelPath={modelPath} />
                 </Canvas>
             </div>
             <div className='w-1/2'>
