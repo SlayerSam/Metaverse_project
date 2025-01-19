@@ -7,6 +7,7 @@ import { resetUser } from '@/redux/slices/userSlice';
 import { SwitchCamera } from 'lucide-react';
 import { userInitialState } from '@/redux/intialStates/userInitialState';
 import RoomList from './RoomList';
+import { ModeToggle } from './ui/toggle-mode';
 
 export default function Navbar({ setIsOpen, setIsFirstPerson, isOpen }) {
     const { user } = useSelector((state) => state.user)
@@ -15,7 +16,7 @@ export default function Navbar({ setIsOpen, setIsFirstPerson, isOpen }) {
     const signOutUser = async () => {
         try {
             if (user?.roomId) {
-                
+
             }
             dispatch(resetUser(userInitialState))
             toast.success('Logged out successfully')
@@ -28,7 +29,7 @@ export default function Navbar({ setIsOpen, setIsFirstPerson, isOpen }) {
 
 
     return (
-        <div className='w-full h-14 fixed z-[10] flex justify-between backdrop-blur-3xl'>
+        <div className='w-full h-14 fixed z-[10] flex justify-between dark:bg-[rgba(0,0,0,0.43)] bg-[rgba(255,255,255,0.43)] backdrop-blur-3xl'>
             <div className='w-1/4 border-2 h-full flex justify-center items-center'>
                 <p className='text-center text-[20px] font-semibold'>
                     Meta Bazaar
@@ -48,15 +49,18 @@ export default function Navbar({ setIsOpen, setIsFirstPerson, isOpen }) {
                     }
                 </div>
                 <div className='flex w-full h-full'>
-                    <div className='w-1/3 h-full flex justify-center items-center'>
+                    <div className='w-1/4 h-full flex justify-center items-center'>
                         <Button onClick={() => { setIsFirstPerson((prev) => !prev) }}>
                             <SwitchCamera />
                         </Button>
                     </div>
-                    <div className='w-1/3 bg-gray-300 h-full flex justify-center items-center'>
+                    <div className='w-1/4 h-full flex justify-center items-center'>
+                        <ModeToggle />
+                    </div>
+                    <div className='w-1/4 h-full flex justify-center items-center'>
                         <RoomList roomId={user?.roomId} />
                     </div>
-                    <div className='w-1/3 bg-gray-300 h-full flex justify-center items-center'>
+                    <div className='w-1/4 h-full flex justify-center items-center'>
                         {user?.name}
                     </div>
                 </div>

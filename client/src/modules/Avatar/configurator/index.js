@@ -8,21 +8,16 @@ import { Environment } from '@react-three/drei'
 import { Canvas } from 'react-three-fiber'
 
 const formSchema = z.object({
-    hairColor: z.string().min(2, {
-        message: "Color field cannot be empty.",
-    }),
-    shirtColor: z.string().min(2, {
-        message: "Color field cannot be empty.",
-    }),
-    pantColor: z.string().min(2, {
-        message: "Color field cannot be empty.",
-    }),
-    shoesColor: z.string().min(2, {
-        message: "Color field cannot be empty.",
-    }),
-    left_arm: z.number().min(0, {
-        message: "Arm size must be a positive number.",
-    })
+    hairColor: z.string(),
+    shirtColor: z.string(),
+    pantColor: z.string(),
+    shoesColor: z.string(),
+    arm_length: z.number(),
+    arm_width: z.number(),
+    leg_length: z.number(),
+    leg_width: z.number(),
+    shoesColor: z.string(),
+    gender: z.string()
 })
 
 export default function AvatarConfigurator({ next }) {
@@ -42,6 +37,8 @@ export default function AvatarConfigurator({ next }) {
         },
     })
 
+    console.log(form.watch('arm_length'), form.watch('leg_length'), form.watch('arm_width'), form.watch('leg_width'))
+
     useEffect(() => {
         const subscription = form.watch((value) => {
             if (value.gender === 'male') {
@@ -50,7 +47,7 @@ export default function AvatarConfigurator({ next }) {
                 setModelPath('/models/Female.glb');
             }
         });
-        return () => subscription.unsubscribe(); 
+        return () => subscription.unsubscribe();
     }, [form]);
 
 

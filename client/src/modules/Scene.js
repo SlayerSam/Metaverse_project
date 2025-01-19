@@ -1,7 +1,7 @@
 'use client';
 import { Canvas } from '@react-three/fiber';
 import { useRef, useState, Suspense, useEffect } from 'react';
-import { Environment } from '@react-three/drei';
+import { Billboard, Environment, Text } from '@react-three/drei';
 import ThirdPersonCamera from './Avatar/camera/ThirdPerson';
 import FirstPersonCamera from './Avatar/camera/FirstPerson';
 import SampleBase from './Base/SampleBase';
@@ -46,45 +46,73 @@ export default function Scene({ isOpen, isFirstPerson }) {
             <Suspense fallback={null}>
                 {BaseUrl ? <SampleBase /> : <SampleBase2 />}
             </Suspense>
+
             {qrCodeUrl && <QRPlane url={qrCodeUrl} />}
 
             <ambientLight intensity={0.5} />
             <pointLight position={[10, 10, 100]} />
 
-            <Avatar
-                group={avatarRef}
-                setHeadNode={setHeadNode}
-                isFirstPerson={isFirstPerson}
-                setBaseUrl={setBaseUrl}
-                setIsMoving={setIsMoving}
-                isOpen={isOpen}
-            />
-            {rooms?.map((room, roomIndex) => {
-                if (room.id == user?.roomId)
-                    return (
-                        <group key={roomIndex}>
-                            {room.avatars?.map((userAvatar, userIndex) => {
-                                if (userAvatar?.userId != user?.id) {
-                                    return (
-                                        <Suspense key={userIndex} fallback={null}>
-                                            <Character
-                                                id={userAvatar.userId}
-                                                hairColor={userAvatar.hairColor}
-                                                pantColor={userAvatar.pantColor}
-                                                shirtColor={userAvatar.shirtColor}
-                                                shoesColor={userAvatar.shoesColor}
-                                                position={new THREE.Vector3(userAvatar.position.x, userAvatar.position.y, userAvatar.position.z)}
-                                                isJumping={userAvatar.isJumping}
-                                                isMoving={userAvatar.isMoving}
-                                                rotation={userAvatar.rotation}
-                                            />
-                                        </Suspense>
-                                    )
-                                }
-                            })}
-                        </group>
-                    )
-            })}
+            {rooms?.map((room, roomIndex) => (
+                <>
+                    {
+                        room.id == user?.roomId && room.avatars?.map((userAvatar, userIndex) => {
+                            if (userAvatar?.userId != user?.id) {
+                                return (
+                                    <Suspense key={userIndex} fallback={null}>
+                                        <Billboard
+                                            follow={true}
+                                            lockX={true}
+                                            lockY={true}
+                                            lockZ={false}
+                                        >
+                                            <Text
+                                                position={[0, 2.2, 0]}
+                                                fontSize={0.2}
+                                                color="white"
+                                                anchorX="center"
+                                                anchorY="bottom"
+                                            >
+                                                Avatar Name
+                                            </Text>
+                                        </Billboard>
+                                        <Character
+                                            id={userAvatar.userId}
+                                            hairColor={userAvatar.hairColor}
+                                            pantColor={userAvatar.pantColor}
+                                            shirtColor={userAvatar.shirtColor}
+                                            shoesColor={userAvatar.shoesColor}
+                                            position={new THREE.Vector3(userAvatar.position.x, userAvatar.position.y, userAvatar.position.z)}
+                                            isJumping={userAvatar.isJumping}
+                                            isMoving={userAvatar.isMoving}
+                                            rotation={userAvatar.rotation}
+                                            gender={userAvatar.gender}
+                                            armLength={userAvatar.arm_length}
+                                            armWidth={userAvatar.arm_width}
+                                            legLength={userAvatar.leg_length}
+                                            legWidth={userAvatar.leg_width}
+                                        />
+                                    </Suspense>
+                                )
+                            }
+                            else {
+                                return (
+                                    <Suspense key={userIndex} fallback={null}>
+                                        <Avatar
+                                            group={avatarRef}
+                                            setHeadNode={setHeadNode}
+                                            isFirstPerson={isFirstPerson}
+                                            setBaseUrl={setBaseUrl}
+                                            setIsMoving={setIsMoving}
+                                            isOpen={isOpen}
+                                            avatar={userAvatar}
+                                        />
+                                    </Suspense>
+                                )
+                            }
+                        })
+                    }
+                </>
+            ))}
         </Canvas>
     );
 }

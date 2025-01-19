@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useFrame } from 'react-three-fiber';
 import * as THREE from 'three';
 
 export function MaleModel({
@@ -11,8 +12,14 @@ export function MaleModel({
     shoesColor = '#ffffff',
     position,
     rotation,
+    armWidth,
+    armLength,
+    legWidth,
+    legLength,
+    display = false,
     ...props
 }) {
+    const [positionState, setPosition] = useState(position);
     const shirtMaterial = useMemo(() => {
         const newMaterial = materials.Ch42_Body.clone();
         newMaterial.color = new THREE.Color(shirtColor);
@@ -39,8 +46,31 @@ export function MaleModel({
         return newMaterial;
     }, [shoesColor, materials.Ch42_Sneakers]);
 
+    useFrame(() => {
+        if (nodes && armWidth && armLength) {
+            if (nodes['mixamorigLeftArm']) {
+                nodes['mixamorigLeftArm'].scale.set(armWidth, armLength, armWidth);
+                nodes['mixamorigRightArm'].scale.set(armWidth, armLength, armWidth);
+            }
+        }
+        if (nodes && legWidth && legLength) {
+            if (nodes['mixamorigLeftLeg']) {
+                const legOffset = (legLength - 1) * 4;
+                nodes['mixamorigLeftLeg'].scale.set(legWidth, legLength, legWidth);
+                nodes['mixamorigLeftUpLeg'].scale.set(legWidth, legLength, legWidth);
+                nodes['mixamorigRightLeg'].scale.set(legWidth, legLength, legWidth);
+                nodes['mixamorigRightUpLeg'].scale.set(legWidth, legLength, legWidth);
+                if (display)
+                    setPosition([0, legOffset - 2.8, 0]);
+                else{
+                    setPosition([0, -0.1 + legOffset, 0]);
+                }
+            }
+        }
+    }, [nodes, armWidth, armLength, legWidth, legLength]);
+
     return (
-        <group ref={group} {...props} position={position} rotation={rotation && [0, rotation, 0]} dispose={null}>
+        <group ref={group} {...props} position={positionState} rotation={rotation && [0, rotation, 0]} dispose={null}>
             <group name="Scene">
                 <group name="idle" rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
                     <skinnedMesh
@@ -107,8 +137,14 @@ export function FemaleModel({
     shoesColor = '#ffffff',
     position,
     rotation,
+    armWidth,
+    armLength,
+    legWidth,
+    legLength,
+    display = false,
     ...props
 }) {
+    const [positionState, setPosition] = useState(position);
     const shirtMaterial = useMemo(() => {
         const newMaterial = materials.Ch42_Body.clone();
         newMaterial.color = new THREE.Color(shirtColor);
@@ -135,8 +171,31 @@ export function FemaleModel({
         return newMaterial;
     }, [shoesColor, materials.Ch42_Sneakers]);
 
+    useFrame(() => {
+        if (nodes && armWidth && armLength) {
+            if (nodes['mixamorig2LeftArm']) {
+                nodes['mixamorig2LeftArm'].scale.set(armWidth, armLength, armWidth);
+                nodes['mixamorig2RightArm'].scale.set(armWidth, armLength, armWidth);
+            }
+        }
+        if (nodes && legWidth && legLength) {
+            if (nodes['mixamorig2LeftLeg']) {
+                const legOffset = (legLength - 1) * 4;
+                nodes['mixamorig2LeftLeg'].scale.set(legWidth, legLength, legWidth);
+                nodes['mixamorig2LeftUpLeg'].scale.set(legWidth, legLength, legWidth);
+                nodes['mixamorig2RightLeg'].scale.set(legWidth, legLength, legWidth);
+                nodes['mixamorig2RightUpLeg'].scale.set(legWidth, legLength, legWidth);
+                if (display)
+                    setPosition([0, -2.8 + legOffset, 0]);
+                else{
+                    setPosition([0, 0.2 + legOffset, 0]);
+                }
+            }
+        }
+    }, [nodes, armWidth, armLength, legWidth, legLength]);
+
     return (
-        <group ref={group} {...props} position={position} rotation={rotation && [0, rotation, 0]} dispose={null}>
+        <group ref={group} {...props} position={positionState} rotation={rotation && [0, rotation, 0]} dispose={null}>
             <group name="Scene">
                 <group name="Armature" rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
                     <primitive object={nodes.mixamorig2Hips} />

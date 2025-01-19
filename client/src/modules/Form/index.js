@@ -13,14 +13,14 @@ import RoomList from "@/components/RoomList"
 
 
 export function Form({ isOpen, setIsOpen }) {
-    const [step, setStep] = useState(1)
+    const [step, setStep] = useState(0)
     const [isSignUp, setIsSignUp] = useState(true)
 
     return (
         <AlertDialog setIsOpen={setIsOpen} open={isOpen}>
             <AlertDialogTrigger asChild>
                 <div>
-                    <Button className='bg-purple-600 hover:bg-purple-800' onClick={() => { setIsSignUp(true); setIsOpen(true) }}>Signup</Button>
+                    <Button className='bg-purple-600 hover:bg-purple-800 text-white' onClick={() => { setIsSignUp(true); setIsOpen(true) }}>Signup</Button>
                     <Button variant='secondary' className='hover:bg-violet-200' onClick={() => { setIsSignUp(false); setIsOpen(true) }}>Login</Button>
                 </div>
             </AlertDialogTrigger>
@@ -50,7 +50,7 @@ export function Form({ isOpen, setIsOpen }) {
                                 }
                             </>
                         )
-                }
+                }   
             </AlertDialogContent>
         </AlertDialog>
     )

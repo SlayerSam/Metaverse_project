@@ -107,8 +107,7 @@ export function SlideField({
                             className={cn("w-[85%] mt-2 py-2", className)}
                             placeholder={placeholder}
                             value={[field.value]}
-                            onValueChange={field.onChange}
-                        />
+                            onValueChange={(value) => field.onChange(value[0])} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>

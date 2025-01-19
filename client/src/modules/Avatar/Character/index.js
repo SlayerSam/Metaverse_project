@@ -1,22 +1,17 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useAnimations, useGLTF } from '@react-three/drei';
-import { MaleModel } from '../AvatarModel';
+import { FemaleModel, MaleModel } from '../AvatarModel';
 import { SkeletonUtils } from 'three-stdlib';
 import { useFrame, useGraph } from 'react-three-fiber';
 import { getSocket } from '@/components/WebSocketClient';
 import * as THREE from 'three'
+import { createLabel } from '@/utils/Avatar.utils';
 
-export function Character({ id, hairColor, shirtColor, pantColor, shoesColor, position, isMoving, isJumping, rotation }) {
-    const group = useRef(null);
+export function Character({ id, hairColor, shirtColor, pantColor, shoesColor, position, isMoving, isJumping, rotation, gender, armWidth, armLength, legWidth, legLength }) {
     const [positionState, setPosition] = useState(position)
     const [isMovingState, setIsMoving] = useState(isMoving);
     const [rotationState, setRotation] = useState(rotation)
     const [isJumpingState, setIsJumping] = useState(isJumping);
-    const [animation, setAnimation] = useState('idle');
-    const { materials, scene, animations } = useGLTF('/models/Avatar.glb');
-    const { actions, mixer } = useAnimations(animations, group); // Get mixer for handling events
-    const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
-    const { nodes } = useGraph(clone)
 
     useEffect(() => {
         const socket = getSocket();
@@ -30,11 +25,63 @@ export function Character({ id, hairColor, shirtColor, pantColor, shoesColor, po
         })
     }, [])
 
+    if (gender == 'male') {
+        return <MaleAvatar
+            id={id}
+            hairColor={hairColor}
+            shirtColor={shirtColor}
+            pantColor={pantColor}
+            shoesColor={shoesColor}
+            position={positionState}
+            isMoving={isMovingState}
+            isJumping={isJumpingState}
+            rotation={rotationState}
+            armWidth={armWidth}
+            armLength={armLength}
+            legWidth={legWidth}
+            legLength={legLength}
+            modelPath={'/models/Avatar.glb'}
+        />
+
+    }
+    else {
+        return <FemaleAvatar
+            id={id}
+            hairColor={hairColor}
+            shirtColor={shirtColor}
+            pantColor={pantColor}
+            shoesColor={shoesColor}
+            position={position}
+            isMoving={isMoving}
+            isJumping={isJumping}
+            rotation={rotation}
+            armWidth={armWidth}
+            armLength={armLength}
+            legWidth={legWidth}
+            legLength={legLength}
+            modelPath={'/models/Female.glb'}
+        />
+
+    }
+}
+
+
+const MaleAvatar = ({ id, hairColor, shirtColor, pantColor, shoesColor, positionState, isMovingState, isJumpingState, rotationState, modelPath, armLength, armWidth, legLength, legWidth }) => {
+    useEffect(() => {
+        useGLTF.preload(modelPath);
+    }, [modelPath]);
+    const group = useRef(null);
+    const [animation, setAnimation] = useState('idle');
+    const { materials, scene, animations } = useGLTF(modelPath);
+    const { actions, mixer } = useAnimations(animations, group); // Get mixer for handling events
+    const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
+    const { nodes } = useGraph(clone)
 
     useEffect(() => {
         actions[animation].reset().fadeIn(0.32).play();
         return () => actions[animation]?.fadeOut(0.32);
     }, [animation]);
+
 
     useFrame(() => {
         if (isMovingState && !isJumpingState) {
@@ -55,8 +102,52 @@ export function Character({ id, hairColor, shirtColor, pantColor, shoesColor, po
             shoesColor={shoesColor}
             position={positionState}
             rotation={rotationState}
+            armLength={armLength}
+            armWidth={armWidth}
+            legLength={legLength}
+            legWidth={legWidth}
         />
     );
 }
+const FemaleAvatar = ({ id, hairColor, shirtColor, pantColor, shoesColor, positionState, isMovingState, isJumpingState, rotationState, modelPath, armWidth, armLength, legLength, legWidth }) => {
+    useEffect(() => {
+        useGLTF.preload(modelPath);
+    }, [modelPath]);
+    const group = useRef(null);
+    const [animation, setAnimation] = useState('idle');
+    const { materials, scene, animations } = useGLTF(modelPath);
+    const { actions, mixer } = useAnimations(animations, group); // Get mixer for handling events
+    const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
+    const { nodes } = useGraph(clone)
 
-useGLTF.preload('/models/Avatar.glb');
+    useEffect(() => {
+        actions[animation].reset().fadeIn(0.32).play();
+        return () => actions[animation]?.fadeOut(0.32);
+    }, [animation]);
+
+    useFrame(() => {
+        if (isMovingState && !isJumpingState) {
+            setAnimation('walking');
+        } else if (!isMovingState && !isJumpingState) {
+            setAnimation('idle');
+        }
+    }, [isMovingState, isJumpingState])
+
+    return (
+        <FemaleModel
+            nodes={nodes}
+            group={group}
+            materials={materials}
+            hairColor={hairColor}
+            shirtColor={shirtColor}
+            pantColor={pantColor}
+            shoesColor={shoesColor}
+            position={positionState}
+            rotation={rotationState}
+            armLength={armLength}
+            armWidth={armWidth}
+            legLength={legLength}
+            legWidth={legWidth}
+        />
+    );
+}

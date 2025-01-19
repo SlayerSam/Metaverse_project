@@ -74,7 +74,6 @@ export default function Signup({ next, setIsOpen }) {
                     await createRoom().then(() => {
                         toast.success('User signed up successfully');
                         next((prev) => prev + 1);
-                        setIsOpen(false);
                     })
                 } catch (error) {
                     toast.error()
