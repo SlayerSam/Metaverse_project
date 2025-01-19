@@ -13,6 +13,8 @@ import { Character } from './Avatar/Character';
 import * as THREE from 'three'
 import { generateQRCode } from '@/utils/qrcode.utils';
 import QRPlane from '@/components/QRcode';
+import { Physics } from '@react-three/cannon';
+import { AvatarPhysics, StaticBase } from '@/utils/physics.utils';
 
 export default function Scene({ isOpen, isFirstPerson }) {
     const { user } = useSelector((state) => state.user);
@@ -36,83 +38,92 @@ export default function Scene({ isOpen, isFirstPerson }) {
 
     return (
         <Canvas shadows>
-            <Environment preset="park" />
 
+            <Environment preset="park" />
+            <ambientLight intensity={0.5} />
+            <pointLight position={[10, 10, 100]} />
             {isFirstPerson
                 ? <FirstPersonCamera headNode={headNode} avatarRef={avatarRef} isMoving={isMoving} />
                 : <ThirdPersonCamera avatarRef={avatarRef} isMoving={isMoving} />
             }
+            <Physics gravity={[0, -9.8, 0]}>
+                <StaticBase>
+                    <Suspense fallback={null}>
+                        {BaseUrl ? <SampleBase /> : <SampleBase2 />}
+                    </Suspense>
+                </StaticBase>
 
-            <Suspense fallback={null}>
-                {BaseUrl ? <SampleBase /> : <SampleBase2 />}
-            </Suspense>
+                {qrCodeUrl && <QRPlane url={qrCodeUrl} />}
 
-            {qrCodeUrl && <QRPlane url={qrCodeUrl} />}
 
-            <ambientLight intensity={0.5} />
-            <pointLight position={[10, 10, 100]} />
-
-            {rooms?.map((room, roomIndex) => (
-                <>
-                    {
-                        room.id == user?.roomId && room.avatars?.map((userAvatar, userIndex) => {
-                            if (userAvatar?.userId != user?.id) {
-                                return (
-                                    <Suspense key={userIndex} fallback={null}>
-                                        <Billboard
-                                            follow={true}
-                                            lockX={true}
-                                            lockY={true}
-                                            lockZ={false}
-                                        >
-                                            <Text
-                                                position={[0, 2.2, 0]}
-                                                fontSize={0.2}
-                                                color="white"
-                                                anchorX="center"
-                                                anchorY="bottom"
+                {rooms?.map((room, roomIndex) => (
+                    <>
+                        {
+                            room.id == user?.roomId && room.avatars?.map((userAvatar, userIndex) => {
+                                if (userAvatar?.userId != user?.id) {
+                                    return (
+                                        <Suspense key={userIndex} fallback={null}>
+                                            <Billboard
+                                                follow={true}
+                                                lockX={true}
+                                                lockY={true}
+                                                lockZ={false}
                                             >
-                                                Avatar Name
-                                            </Text>
-                                        </Billboard>
-                                        <Character
-                                            id={userAvatar.userId}
-                                            hairColor={userAvatar.hairColor}
-                                            pantColor={userAvatar.pantColor}
-                                            shirtColor={userAvatar.shirtColor}
-                                            shoesColor={userAvatar.shoesColor}
-                                            position={new THREE.Vector3(userAvatar.position.x, userAvatar.position.y, userAvatar.position.z)}
-                                            isJumping={userAvatar.isJumping}
-                                            isMoving={userAvatar.isMoving}
-                                            rotation={userAvatar.rotation}
-                                            gender={userAvatar.gender}
-                                            armLength={userAvatar.arm_length}
-                                            armWidth={userAvatar.arm_width}
-                                            legLength={userAvatar.leg_length}
-                                            legWidth={userAvatar.leg_width}
-                                        />
-                                    </Suspense>
-                                )
-                            }
-                            else {
-                                return (
-                                    <Suspense key={userIndex} fallback={null}>
-                                        <Avatar
-                                            group={avatarRef}
-                                            setHeadNode={setHeadNode}
-                                            isFirstPerson={isFirstPerson}
-                                            setBaseUrl={setBaseUrl}
-                                            setIsMoving={setIsMoving}
-                                            isOpen={isOpen}
-                                            avatar={userAvatar}
-                                        />
-                                    </Suspense>
-                                )
-                            }
-                        })
-                    }
-                </>
-            ))}
+                                                <Text
+                                                    position={[0, 2.2, 0]}
+                                                    fontSize={0.2}
+                                                    color="white"
+                                                    anchorX="center"
+                                                    anchorY="bottom"
+                                                >
+                                                    Avatar Name
+                                                </Text>
+                                            </Billboard>
+                                            <AvatarPhysics
+                                                position={new THREE.Vector3(userAvatar.position.x, userAvatar.position.y, userAvatar.position.z)}>
+                                                <Character
+                                                    id={userAvatar.userId}
+                                                    hairColor={userAvatar.hairColor}
+                                                    pantColor={userAvatar.pantColor}
+                                                    shirtColor={userAvatar.shirtColor}
+                                                    shoesColor={userAvatar.shoesColor}
+                                                    position={new THREE.Vector3(userAvatar.position.x, userAvatar.position.y, userAvatar.position.z)}
+                                                    isJumping={userAvatar.isJumping}
+                                                    isMoving={userAvatar.isMoving}
+                                                    rotation={userAvatar.rotation}
+                                                    gender={userAvatar.gender}
+                                                    armLength={userAvatar.arm_length}
+                                                    armWidth={userAvatar.arm_width}
+                                                    legLength={userAvatar.leg_length}
+                                                    legWidth={userAvatar.leg_width}
+                                                />
+                                            </AvatarPhysics>
+                                        </Suspense>
+                                    )
+                                }
+                                else {
+                                    return (
+                                        <Suspense key={userIndex} fallback={null}>
+                                            <AvatarPhysics
+                                                position={new THREE.Vector3(userAvatar.position.x, userAvatar.position.y, userAvatar.position.z)}>
+                                                <Avatar
+                                                    group={avatarRef}
+                                                    setHeadNode={setHeadNode}
+                                                    isFirstPerson={isFirstPerson}
+                                                    setBaseUrl={setBaseUrl}
+                                                    setIsMoving={setIsMoving}
+                                                    isOpen={isOpen}
+                                                    avatar={userAvatar}
+                                                />
+                                            </AvatarPhysics>
+                                        </Suspense>
+                                    )
+                                }
+                            })
+                        }
+                    </>
+                ))}
+            </Physics>
         </Canvas>
     );
 }

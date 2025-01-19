@@ -63,7 +63,7 @@ export function MaleModel({
                 if (display)
                     setPosition([0, legOffset - 2.8, 0]);
                 else{
-                    setPosition([0, -0.1 + legOffset, 0]);
+                    setPosition([0, 0, 0]);
                 }
             }
         }
@@ -188,7 +188,7 @@ export function FemaleModel({
                 if (display)
                     setPosition([0, -2.8 + legOffset, 0]);
                 else{
-                    setPosition([0, 0.2 + legOffset, 0]);
+                    setPosition([0, -0.1 + legOffset, 0]);
                 }
             }
         }
