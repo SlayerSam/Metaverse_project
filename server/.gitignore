@@ -37,3 +37,6 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+database/users.json
+database/rooms.json
+database/avatars.json
