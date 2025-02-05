@@ -14,4 +14,3 @@ export function createLabel(text) {
   sprite.scale.set(1.5, 1.5, 1.5); // Adjust scale as needed
   return sprite;
 }
-

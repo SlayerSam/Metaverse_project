@@ -44,25 +44,29 @@ const getUserById = (id) => {
 }
 
 async function fetchRooms() {
-    let roomsWithAvatars = Object.entries(rooms).map(([key, val]) => {
-        let avatarsArr = [];
-        if (val.users.length > 0) {
-            val.users.forEach(user => {
-                avatarsArr.push(avatars[getUserById(user)]);
-            });
-            return {
-                ...val,
-                avatars: avatarsArr
-            };
-        } else {
-            return {
-                ...val,
-                avatars: []
-            };
-        }
-    });
-    return roomsWithAvatars;
+    let roomsArr = Object.entries(rooms).map(([key, val]) => {
+        return val
+    })
+    return roomsArr;
 }
+
+
+async function fetchRoomById(roomId) {
+    let roomData = rooms[roomId];
+    if (!roomData) {
+        throw new Error(`Room with ID ${roomId} not found`);
+    }
+
+    let roomWithAvatars = roomData?.users?.map((user) => {
+        return avatars[getUserById(user)];
+    });
+
+    return {
+        ...roomData,
+        avatars: roomWithAvatars
+    };
+}
+
 
 
 async function deleteOldEmptyRooms(roomId) {
@@ -83,6 +87,7 @@ async function deleteOldEmptyRooms(roomId) {
 async function joinRoom(roomId, userId, socketId) {
     try {
         await deleteOldEmptyRooms(roomId);
+        console.log(roomId)
         users[socketId].roomId = roomId;
         console.log(rooms[roomId].users);
         if (!rooms[roomId].users.includes(userId)) {
@@ -97,4 +102,4 @@ async function joinRoom(roomId, userId, socketId) {
 
 
 
-module.exports = { createRoom, joinRoom, fetchRooms };
+module.exports = { createRoom, joinRoom, fetchRooms, fetchRoomById };

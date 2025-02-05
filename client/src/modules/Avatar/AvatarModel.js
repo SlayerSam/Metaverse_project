@@ -19,7 +19,6 @@ export function MaleModel({
     display = false,
     ...props
 }) {
-    const [positionState, setPosition] = useState(position);
     const shirtMaterial = useMemo(() => {
         const newMaterial = materials.Ch42_Body.clone();
         newMaterial.color = new THREE.Color(shirtColor);
@@ -53,24 +52,24 @@ export function MaleModel({
                 nodes['mixamorigRightArm'].scale.set(armWidth, armLength, armWidth);
             }
         }
-        if (nodes && legWidth && legLength) {
+        if (nodes && legWidth && legLength && position) {
             if (nodes['mixamorigLeftLeg']) {
                 const legOffset = (legLength - 1) * 4;
                 nodes['mixamorigLeftLeg'].scale.set(legWidth, legLength, legWidth);
                 nodes['mixamorigLeftUpLeg'].scale.set(legWidth, legLength, legWidth);
                 nodes['mixamorigRightLeg'].scale.set(legWidth, legLength, legWidth);
                 nodes['mixamorigRightUpLeg'].scale.set(legWidth, legLength, legWidth);
-                if (display)
-                    setPosition([0, legOffset - 2.8, 0]);
-                else{
-                    setPosition([0, 0, 0]);
+                if (display) {
+                    group.current.position.y = legOffset - 2.8
+                } else {
+                    group.current.position.y = legOffset
                 }
             }
         }
     }, [nodes, armWidth, armLength, legWidth, legLength]);
 
     return (
-        <group ref={group} {...props} position={positionState} rotation={rotation && [0, rotation, 0]} dispose={null}>
+        <group ref={group} {...props} position={position} rotation={rotation && [0, rotation, 0]} dispose={null}>
             <group name="Scene">
                 <group name="idle" rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
                     <skinnedMesh
@@ -144,7 +143,6 @@ export function FemaleModel({
     display = false,
     ...props
 }) {
-    const [positionState, setPosition] = useState(position);
     const shirtMaterial = useMemo(() => {
         const newMaterial = materials.Ch42_Body.clone();
         newMaterial.color = new THREE.Color(shirtColor);
@@ -185,17 +183,17 @@ export function FemaleModel({
                 nodes['mixamorig2LeftUpLeg'].scale.set(legWidth, legLength, legWidth);
                 nodes['mixamorig2RightLeg'].scale.set(legWidth, legLength, legWidth);
                 nodes['mixamorig2RightUpLeg'].scale.set(legWidth, legLength, legWidth);
-                if (display)
-                    setPosition([0, -2.8 + legOffset, 0]);
-                else{
-                    setPosition([0, -0.1 + legOffset, 0]);
+                if (display) {
+                    group.current.position.y = legOffset - 2.8
+                } else {
+                    group.current.position.y = legOffset - 0.3
                 }
             }
         }
     }, [nodes, armWidth, armLength, legWidth, legLength]);
 
     return (
-        <group ref={group} {...props} position={positionState} rotation={rotation && [0, rotation, 0]} dispose={null}>
+        <group ref={group} {...props} position={position} rotation={rotation && [0, rotation, 0]} dispose={null}>
             <group name="Scene">
                 <group name="Armature" rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
                     <primitive object={nodes.mixamorig2Hips} />
@@ -231,8 +229,6 @@ export function FemaleModel({
                     skeleton={nodes.Ch42_Shirt.skeleton}
                     material-color={shirtColor}
                 />
-
-
                 <skinnedMesh
                     name="Ch42_Shorts"
                     geometry={nodes.Ch42_Pants.geometry}

@@ -23,7 +23,7 @@ const MaleAvatar = ({ group, setIsMoving, isFirstPerson, isOpen, modelPath, avat
     const [animation, setAnimation] = useState('idle');
     const { camera } = useThree();
 
-    const speed = 0.01;
+    const speed = 0.03;
     const rotationSpeed = 0.05;
     const jumpSpeed = 0.2;
     const gravity = 0.02;
@@ -176,7 +176,7 @@ const FemaleAvatar = ({ group, setIsMoving, isFirstPerson, isOpen, modelPath, av
     const [animation, setAnimation] = useState('idle');
     const { camera } = useThree();
 
-    const speed = 0.01;
+    const speed = 0.03;
     const rotationSpeed = 0.05;
     const jumpSpeed = 0.2;
     const gravity = 0.02;

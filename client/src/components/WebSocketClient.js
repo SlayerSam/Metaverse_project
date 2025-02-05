@@ -82,16 +82,28 @@ export const reConnectUser = async (userId, roomId) => {
     }
 };
 
-export const signup = async (userData) => {
+export const signup = async (userData, setIsLoading, setBtnText) => {
     try {
+        setIsLoading(true);
         userData.password = hashSync(userData.password, 10);
         const { email, name, password } = userData;
         const contract = await getContract();
         const tx = await contract.registerUser(name, email, password);
-        await tx.wait();
+        setBtnText('waiting for confirmation...')
+        const receipt = await tx.wait(); // Wait for the transaction to be mined
 
-        const response = await emitEvent('signup', { userData });
-        return { response, address: (await getContract()).getAddress(), err: '' };
+        if (receipt.status === 1) {
+            console.log('Transaction confirmed:', receipt);
+            const response = await emitEvent('signup', { userData });
+            setBtnText('Confirmed')
+            setIsLoading(false); // Set loading state to false
+            return { response, address: contract.getAddress(), err: '' };
+        } else {
+            console.error('Transaction failed:', receipt);
+            setIsLoading(false); // Set loading state to false
+            setBtnText('Continue')
+            return { response: {}, err: 'Transaction failed' };
+        }
     } catch (err) {
         console.error('Signup error:', err);
         return { response: {}, err: err };
@@ -140,6 +152,17 @@ export const fetchRoom = async (setRooms) => {
         throw error;
     }
 };
+
+export const fetchRoomById = async (roomId, setRoom) => {
+    try {
+        const response = await emitEvent('fetchRoomById', { roomId });
+        setRoom(response.room);
+        return response.room;
+    } catch (error) {
+        console.error('Fetch room by id error:', error);
+        throw error;
+    }
+}
 
 export const joinRoom = async (userId, roomId, setIsOpen) => {
     try {

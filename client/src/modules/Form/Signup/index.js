@@ -13,6 +13,8 @@ import { AlertTitle } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/slices/userSlice";
 import { createRoom, signup } from "@/components/WebSocketClient";
+import { useState } from "react";
+import { LoaderCircle } from "lucide-react";
 
 const formSchema = z.object({
     firstName: z.string().min(2, {
@@ -35,6 +37,8 @@ const formSchema = z.object({
 
 export default function Signup({ next, setIsOpen }) {
     const dispatch = useDispatch()
+    const [isLoading, setIsLoading] = useState(false)
+    const [btnText, setBtnText] = useState('Continue')
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -46,13 +50,14 @@ export default function Signup({ next, setIsOpen }) {
     });
 
     const onSubmit = async (formData, e) => {
+        setIsLoading(true)
         e.preventDefault();
         try {
             const { response, address, err } = await signup({
                 name: formData.firstName + ' ' + formData.lastName,
                 email: formData.email,
                 password: formData.password,
-            })
+            }, setIsLoading, setBtnText)
             if (err) {
                 toast.error(err?.reason || err?.message)
                 return;
@@ -76,8 +81,11 @@ export default function Signup({ next, setIsOpen }) {
                         next((prev) => prev + 1);
                     })
                 } catch (error) {
-                    toast.error()
                     console.error('room creation', error);
+                }
+                finally {
+                    setIsLoading(false)
+                    setBtnText('Continue')
                 }
             } else {
                 toast.error(data.error || 'Error during signup');
@@ -85,6 +93,10 @@ export default function Signup({ next, setIsOpen }) {
         } catch (error) {
             console.log(error)
             toast.error('An unexpected error occurred');
+        }
+        finally {
+            setIsLoading(false)
+            setBtnText('Continue')
         }
     };
 
@@ -133,8 +145,8 @@ export default function Signup({ next, setIsOpen }) {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel onClick={() => setIsOpen(false)}>Cancel</AlertDialogCancel>
-                    <Button type='submit'>Continue</Button>
+                    <AlertDialogCancel onClick={() => setIsOpen(false)} disabled={isLoading}>Cancel</AlertDialogCancel>
+                    <Button type='submit' className="flex gap-2" disabled={isLoading}>{btnText}{isLoading && <LoaderCircle className="animate-spin duration-750" />}</Button>
                 </AlertDialogFooter>
             </form>
         </Form>

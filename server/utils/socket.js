@@ -1,4 +1,4 @@
-const { createRoom, fetchRooms, joinRoom } = require("../controllers/room.controller");
+const { createRoom, fetchRooms, joinRoom, fetchRoomById } = require("../controllers/room.controller");
 const { avatarStore, positionUpdate, reConnectUser } = require('../controllers/user.controller');
 const { loadData, users } = require("../database/db");
 const { signup, login, logout } = require("./auth.utils");
@@ -69,6 +69,17 @@ function initializeSocket(io) {
                 sendResponse('error', { message: error.message }, requestId);
             }
         });
+
+        socket.on('fetchRoomById', async ({ roomId, requestId }) => {
+            try {
+                loadData()
+                const room = await fetchRoomById(roomId)
+                sendResponse('fetchRoomById', { room }, requestId);
+            } catch (error) {
+                console.error('Error in fetchRoomById:', error);
+                sendResponse('error', { message: error.message }, requestId);
+            }
+        })
 
         socket.on('joinRoom', async ({ roomId, userId, requestId }) => {
             try {

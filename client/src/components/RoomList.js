@@ -35,8 +35,6 @@ export default function RoomList({ isList, setIsOpen, roomId }) {
             console.error('Error joining room:', error);
         }
     }
-
-
     if (roomId) {
         return (
             <div className='flex justify-center items-center'>
@@ -44,7 +42,6 @@ export default function RoomList({ isList, setIsOpen, roomId }) {
             </div>
         )
     }
-
     if (rooms.length > 0) {
         if (isList) {
             return (
