@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { ShoppingCart, Trash2 } from "lucide-react";
 import { removeFromCart } from "@/redux/slices/cartSlice";
+import { buyProduct } from "./WebSocketClient"; // Ensure this function is correctly imported
 
 export function CartMenu() {
   const cartItems = useSelector((state) => state.cart.cartItems);
@@ -22,6 +23,8 @@ export function CartMenu() {
   const [selectedItem, setSelectedItem] = React.useState(null);
   const [quantityToRemove, setQuantityToRemove] = React.useState(1);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [isBuying, setIsBuying] = React.useState(false);
+  const [buttonText, setButtonText] = React.useState("Buy All");
 
   const openDialog = (item) => {
     setSelectedItem(item);
@@ -41,6 +44,31 @@ export function CartMenu() {
     setIsDialogOpen(false);
   };
 
+  const handleBuyAll = async () => {
+    if (cartItems.length === 0) return;
+
+    setIsBuying(true);
+    setButtonText("Processing...");
+
+    try {
+      for (const item of cartItems) {
+        await buyProduct(item.id, item.price * item.quantity, item.quantity, () => {}, (text) => {
+          setButtonText(text);
+        });
+      }
+
+      setButtonText("Purchase Successful 🎉");
+      setTimeout(() => {
+        dispatch(removeFromCart(null)); // Remove all items after purchase
+        setButtonText("Buy All");
+        setIsBuying(false);
+      }, 2000);
+    } catch (error) {
+      setButtonText("Try Again");
+      setIsBuying(false);
+    }
+  };
+
   return (
     <>
       <DropdownMenu>
@@ -49,7 +77,7 @@ export function CartMenu() {
             <ShoppingCart size={18} /> Cart ({cartItems?.length || 0})
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-64">
+        <DropdownMenuContent className="w-72">
           <DropdownMenuLabel className="font-semibold">Your Cart</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {cartItems?.length === 0 ? (
@@ -57,7 +85,7 @@ export function CartMenu() {
           ) : (
             <div className="max-h-60 overflow-y-auto">
               {cartItems?.map((item) => (
-                <div key={item.id} className="flex justify-between p-2 border-b items-center">
+                <div key={item.id} className="p-2 border-b flex justify-between items-center">
                   <span>{item.name} (x{item.quantity})</span>
                   <span className="font-bold">₹{item.price * item.quantity}</span>
                   <Trash2 
@@ -66,6 +94,17 @@ export function CartMenu() {
                   />
                 </div>
               ))}
+            </div>
+          )}
+          {cartItems.length > 0 && (
+            <div className="p-2">
+              <Button
+                className="w-full"
+                disabled={isBuying}
+                onClick={handleBuyAll}
+              >
+                {buttonText}
+              </Button>
             </div>
           )}
         </DropdownMenuContent>

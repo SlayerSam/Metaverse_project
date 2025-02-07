@@ -33,7 +33,7 @@ export default function ProductCard({ onNear, product }) {
                 <div className='w-4/5 flex p-2'>
                     <p className='font-bold text-3xl'>{product.price}/-</p>
                 </div>
-                <div className='w-4/5 p-2 flex justify-center items-center gap-4'>
+                <div className='w-4/5 p-2 flex justify-end items-center gap-4'>
                     <div className='flex items-center bg-accent px-1 rounded-md'>
                         <Button variant='ghost' size='icon' onClick={() => setQuantity(prev => Math.max(1, prev - 1))}><Minus size={16} /></Button>
                         <div className='w-0 border h-7 border-accent-foreground mx-3'></div>
@@ -49,7 +49,7 @@ export default function ProductCard({ onNear, product }) {
                         {isInCart ? 'In Cart' : 'Add to Cart'}
                         <ShoppingCart size={16} />
                     </Button>
-                    <Button className='w-fit px-4 flex gap-2' onClick={() => buyProduct(product.id, product.price * quantity, quantity)}>Buy <ShoppingBag size={16} /></Button>
+                    {/* <Button className='w-fit px-4 flex gap-2' onClick={() => buyProduct(product.id, product.price * quantity, quantity)}>Buy <ShoppingBag size={16} /></Button> */}
                 </div>
             </div>
         </div>

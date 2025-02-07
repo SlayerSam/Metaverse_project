@@ -195,10 +195,15 @@ export const playerMovement = async (movementData) => {
     }
 };
 
-export const buyProduct = async (productId, price, quantity) => {
+export const buyProduct = async (productId, price, quantity, setIsLoading, setBtnText) => {
     try {
+        setIsLoading(true);
+        setBtnText('Processing...');
+
         const contract = await getContract();
         const tx = await contract.buyProduct(productId, { value: price });
+        setBtnText('Waiting for confirmation...');
+
         await tx.wait(); // Wait for the transaction to complete
 
         const response = await emitEvent('buyProduct', {
@@ -208,9 +213,13 @@ export const buyProduct = async (productId, price, quantity) => {
             quantity
         });
 
+        setBtnText('Purchase Successful');
+        setIsLoading(false);
         return response;
     } catch (error) {
         console.error('Buy product error:', error);
+        setIsLoading(false);
+        setBtnText('Try Again');
         throw error;
     }
 };
