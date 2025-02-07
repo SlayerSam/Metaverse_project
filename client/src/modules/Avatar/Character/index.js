@@ -1,11 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useAnimations, useGLTF } from '@react-three/drei';
+import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { Billboard, Text, useAnimations, useGLTF } from '@react-three/drei';
 import { FemaleModel, MaleModel } from '../AvatarModel';
 import { SkeletonUtils } from 'three-stdlib';
 import { useFrame, useGraph } from 'react-three-fiber';
 import { getSocket } from '@/components/WebSocketClient';
 import * as THREE from 'three'
-import { createLabel } from '@/utils/Avatar.utils';
 
 export function Character({ id, hairColor, shirtColor, pantColor, shoesColor, position, isMoving, isJumping, rotation, gender, armWidth, armLength, legWidth, legLength }) {
     const [positionState, setPosition] = useState(position)
@@ -24,45 +23,57 @@ export function Character({ id, hairColor, shirtColor, pantColor, shoesColor, po
             }
         })
     }, [])
-
-    if (gender == 'male') {
-        return <MaleAvatar
-            id={id}
-            hairColor={hairColor}
-            shirtColor={shirtColor}
-            pantColor={pantColor}
-            shoesColor={shoesColor}
-            positionState={positionState}
-            isMovingState={isMovingState}
-            isJumpingState={isJumpingState}
-            rotationState={rotationState}
-            armWidth={armWidth}
-            armLength={armLength}
-            legWidth={legWidth}
-            legLength={legLength}
-            modelPath={'/models/Avatar.glb'}
-        />
-
-    }
-    else {
-        return <FemaleAvatar
-            id={id}
-            hairColor={hairColor}
-            shirtColor={shirtColor}
-            pantColor={pantColor}
-            shoesColor={shoesColor}
-            positionState={positionState}
-            isMovingState={isMovingState}
-            isJumpingState={isJumpingState}
-            rotationState={rotationState}
-            armWidth={armWidth}
-            armLength={armLength}
-            legWidth={legWidth}
-            legLength={legLength}
-            modelPath={'/models/Female.glb'}
-        />
-
-    }
+    return (
+        < Suspense >
+            <group position={positionState}>
+                <Billboard position={[positionState.x,positionState.y + 1.8 , positionState.z]}>
+                    <Text
+                        fontSize={0.1}
+                        color="white"
+                        anchorX="center"
+                        anchorY="bottom"
+                    >
+                        Avatar Name
+                    </Text>
+                </Billboard>
+                {gender === "male" ? (
+                    <MaleAvatar
+                        id={id}
+                        hairColor={hairColor}
+                        shirtColor={shirtColor}
+                        pantColor={pantColor}
+                        shoesColor={shoesColor}
+                        positionState={positionState}
+                        isMovingState={isMovingState}
+                        isJumpingState={isJumpingState}
+                        rotationState={rotationState}
+                        armWidth={armWidth}
+                        armLength={armLength}
+                        legWidth={legWidth}
+                        legLength={legLength}
+                        modelPath={'/models/Avatar.glb'}
+                    />
+                ) : (
+                    <FemaleAvatar
+                        id={id}
+                        hairColor={hairColor}
+                        shirtColor={shirtColor}
+                        pantColor={pantColor}
+                        shoesColor={shoesColor}
+                        positionState={positionState}
+                        isMovingState={isMovingState}
+                        isJumpingState={isJumpingState}
+                        rotationState={rotationState}
+                        armWidth={armWidth}
+                        armLength={armLength}
+                        legWidth={legWidth}
+                        legLength={legLength}
+                        modelPath={'/models/Female.glb'}
+                    />
+                )}
+            </group>
+        </Suspense >
+    )
 }
 
 

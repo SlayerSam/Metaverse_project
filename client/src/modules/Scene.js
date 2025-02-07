@@ -1,5 +1,5 @@
 'use client';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { useRef, useState, Suspense, useEffect } from 'react';
 import { Billboard, Environment, Text } from '@react-three/drei';
 import ThirdPersonCamera from './Avatar/camera/ThirdPerson';
@@ -14,7 +14,7 @@ import * as THREE from 'three'
 import { generateQRCode } from '@/utils/qrcode.utils';
 import QRPlane from '@/components/QRcode';
 
-export default function Scene({ isOpen, isFirstPerson }) {
+export default function Scene({ isOpen, isFirstPerson, setOnNear, setProduct }) {
     const { user } = useSelector((state) => state.user);
     const avatarRef = useRef(); // Reference for the main avatar
     const [headNode, setHeadNode] = useState();
@@ -23,8 +23,19 @@ export default function Scene({ isOpen, isFirstPerson }) {
     const [room, setRoom] = useState([]);
     const [qrCodeUrl, setQrCodeUrl] = useState('');
 
+    // Dummy product data
+    const products = [
+        { id: 1, name: "Nike Shoes", price: "1000", description: "Comfortable running shoes.", image: 'https://res.cloudinary.com/dvpmx2xxb/image/upload/v1718208488/samples/shoe.jpg' },
+        { id: 2, name: "Apple Watch", price: "2500", description: "Smartwatch with fitness tracking.", image: 'https://res.cloudinary.com/dvpmx2xxb/image/upload/v1718208493/samples/chair.png' },
+        { id: 3, name: "Samsung Phone", price: "8000", description: "Latest smartphone with OLED display.", image: 'https://res.cloudinary.com/dvpmx2xxb/image/upload/v1718208473/samples/food/spices.jpg' },
+        { id: 4, name: "Gaming Mouse", price: "500", description: "RGB gaming mouse with high DPI.", image: 'https://res.cloudinary.com/dvpmx2xxb/image/upload/v1718208489/samples/balloons.jpg' },
+        { id: 5, name: "Bluetooth Speaker", price: "750", description: "Portable speaker with deep bass.", image: 'https://res.cloudinary.com/dvpmx2xxb/image/upload/v1718208471/samples/landscapes/beach-boat.jpg' }
+    ];
+
+
+
     useEffect(() => {
-        generateQRCode('https://1d35f0fb-3000.inc1.devtunnels.ms/display/123').then((url) => setQrCodeUrl(url));
+        generateQRCode('https://metaverse-project-three.vercel.app/display/123').then((url) => setQrCodeUrl(url));
     }, []);
 
     useEffect(() => {
@@ -36,7 +47,6 @@ export default function Scene({ isOpen, isFirstPerson }) {
 
     return (
         <Canvas shadows>
-
             <Environment preset="park" />
             <ambientLight intensity={0.5} />
             <pointLight position={[10, 10, 100]} />
@@ -48,7 +58,12 @@ export default function Scene({ isOpen, isFirstPerson }) {
                 {BaseUrl ? <SampleBase /> : <SampleBase2 />}
             </Suspense>
 
-            {qrCodeUrl && <QRPlane url={qrCodeUrl} />}
+            {
+                qrCodeUrl &&
+                products.map((item, index) => (
+                    <QRPlane url={qrCodeUrl} index={index} key={index} avatarRef={avatarRef} onNear={setOnNear} data={item} setProduct={setProduct} />
+                ))
+            }
             <>
                 {
                     room &&
@@ -56,22 +71,6 @@ export default function Scene({ isOpen, isFirstPerson }) {
                         if (userAvatar?.userId != user?.id) {
                             return (
                                 <Suspense key={userIndex} fallback={null}>
-                                    <Billboard
-                                        follow={true}
-                                        lockX={true}
-                                        lockY={true}
-                                        lockZ={false}
-                                    >
-                                        <Text
-                                            position={[0, 2.2, 0]}
-                                            fontSize={0.2}
-                                            color="white"
-                                            anchorX="center"
-                                            anchorY="bottom"
-                                        >
-                                            Avatar Name
-                                        </Text>
-                                    </Billboard>
                                     <Character
                                         id={userAvatar.userId}
                                         hairColor={userAvatar.hairColor}
@@ -109,6 +108,6 @@ export default function Scene({ isOpen, isFirstPerson }) {
                     })
                 }
             </>
-        </Canvas>
+        </Canvas >
     );
 }

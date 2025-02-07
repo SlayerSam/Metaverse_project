@@ -1,3 +1,4 @@
+const { buyProduct } = require("../controllers/product.controller");
 const { createRoom, fetchRooms, joinRoom, fetchRoomById } = require("../controllers/room.controller");
 const { avatarStore, positionUpdate, reConnectUser } = require('../controllers/user.controller');
 const { loadData, users } = require("../database/db");
@@ -115,6 +116,16 @@ function initializeSocket(io) {
                 sendResponse('error', { message: error.message }, requestId);
             }
         });
+        socket.on('buyProduct', async ({ productId, buyer, price, quantity, requestId }) => {
+            try {
+                const product = await buyProduct(socket.id, productId, buyer, price, quantity)
+                sendResponse('buyProduct', { product }, requestId);
+            }
+            catch (error) {
+                console.error('Error in buy product:', error);
+                sendResponse('error', { message: error.message }, requestId);
+            }
+        })
 
         socket.on('disconnect', async () => {
             try {

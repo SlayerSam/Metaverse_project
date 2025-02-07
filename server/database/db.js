@@ -5,11 +5,13 @@ const path = require('path');
 const usersFile = path.resolve(__dirname, 'users.json');
 const roomsFile = path.resolve(__dirname, 'rooms.json');
 const avatarsFile = path.resolve(__dirname, 'avatars.json');
+const productsBuyedFile = path.resolve(__dirname, 'products_buyed.json');
 
 // In-memory objects
 let users = JSON.parse(fs.readFileSync(usersFile, 'utf-8'));
 let rooms = JSON.parse(fs.readFileSync(roomsFile, 'utf-8'));
-let avatars = JSON.parse(fs.readFileSync(avatarsFile, 'utf-8'));;
+let avatars = JSON.parse(fs.readFileSync(avatarsFile, 'utf-8'));
+let productsBuyed = JSON.parse(fs.readFileSync(productsBuyedFile, 'utf-8'));
 
 // Function to load data from JSON files into in-memory objects
 function loadData() {
@@ -21,6 +23,9 @@ function loadData() {
     }
     if (fs.existsSync(avatarsFile)) {
         avatars = JSON.parse(fs.readFileSync(avatarsFile, 'utf-8'));
+    }
+    if (fs.existsSync(productsBuyedFile)) {
+        productsBuyed = JSON.parse(fs.readFileSync(productsBuyedFile, 'utf-8'));
     }
 }
 
@@ -60,7 +65,7 @@ rooms = new Proxy(rooms, {
             return new Proxy(value, {
                 set(nestedTarget, nestedKey, nestedValue) {
                     nestedTarget[nestedKey] = nestedValue;
-                    saveData(roomsFile, target); 
+                    saveData(roomsFile, target);
                     return true;
                 }
             });
@@ -81,5 +86,17 @@ avatars = new Proxy(avatars, {
         return true;
     },
 });
+productsBuyed = new Proxy(productsBuyed, {
+    set(target, key, value) {
+        target[key] = value;
+        saveData(productsBuyedFile, target);
+        return true;
+    },
+    deleteProperty(target, key) {
+        delete target[key];
+        saveData(productsBuyedFile, target);
+        return true;
+    },
+});
 
-module.exports = { users, rooms, avatars, loadData };
+module.exports = { users, rooms, avatars, productsBuyed, loadData };

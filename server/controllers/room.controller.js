@@ -37,7 +37,7 @@ const getUserById = (id) => {
     let val = null;
     Object.entries(users).forEach(([key, user], index) => {
         if (user.id === id) {
-            val = user.avatar;
+            val = user;
         }
     })
     return val
@@ -58,7 +58,11 @@ async function fetchRoomById(roomId) {
     }
 
     let roomWithAvatars = roomData?.users?.map((user) => {
-        return avatars[getUserById(user)];
+        const userObj = getUserById(user)
+        return {
+            ...userObj,
+            ...avatars[userObj.avatar]
+        };
     });
 
     return {

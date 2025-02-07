@@ -12,10 +12,12 @@ import {
   persistStore,
 } from "redux-persist";
 import userReducer from "./slices/userSlice";
+import cartReducer from './slices/cartSlice';
 
 // Combine all the reducers
 const combinedReducer = combineReducers({
   user: userReducer,
+  cart: cartReducer,
 });
 
 // Create a no-op storage for SSR (Next.js server-side)

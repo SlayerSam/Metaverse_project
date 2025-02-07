@@ -9,11 +9,25 @@ contract Auth {
         uint256 created_at;
     }
 
+    struct Product {
+        uint256 id;
+        uint256 price;
+        uint256 payment_date;
+        address payment_address;
+        uint256 quantity;
+        string status; 
+    }
+
     mapping(address => User) private users;
-    mapping(string => bool) private emailExists; // Track for email is already exist
+    mapping(string => bool) private emailExists;
     address[] private userAddresses;
 
+    mapping(uint256 => Product) public products;
+    mapping(address => mapping(uint256 => Product)) public userPurchases;
+    mapping(address => uint256[]) public userProductIds;
+
     event UserRegistered(address userAddress, string name, string email);
+    event ProductPurchased(address indexed buyer, uint256 productId, uint256 price, uint256 paymentDate, uint256 quantity);
 
     function registerUser(
         string memory _name,
@@ -40,26 +54,43 @@ contract Auth {
         return (user.name, user.email);
     }
 
-    function getUserByEmail(
-        string memory _email
-    ) public view returns (User memory) {
-        if (
-            isUserPresent(_email) &&
-            bytes(users[msg.sender].email).length == bytes(_email).length
-        ) {
-            return users[msg.sender];
-        }
-        return User({email: "", name: "", password: "", created_at: 0}); // Assuming these are the struct properties
-    }
-
     function isUserPresent(string memory _email) public view returns (bool) {
-        if (bytes(users[msg.sender].name).length > 0 || emailExists[_email]) {
-            return true;
-        }
-        return false;
+        return bytes(users[msg.sender].name).length > 0 || emailExists[_email];
     }
 
     function getAllUsers() public view returns (address[] memory) {
         return userAddresses;
+    }
+
+    function buyProduct(uint256 productId) public payable {
+        require(msg.value > 0, "Payment required");
+        
+        if (userPurchases[msg.sender][productId].id == productId) {
+            userPurchases[msg.sender][productId].quantity += 1;
+        } else {
+            products[productId] = Product({
+                id: productId,
+                price: msg.value,
+                payment_date: block.timestamp,
+                payment_address: msg.sender,
+                quantity: 1,
+                status: "Paid"
+            });
+            userPurchases[msg.sender][productId] = products[productId];
+            userProductIds[msg.sender].push(productId);
+        }
+
+        emit ProductPurchased(msg.sender, productId, msg.value, block.timestamp, userPurchases[msg.sender][productId].quantity);
+    }
+
+    function getUserPurchases(address user) public view returns (Product[] memory) {
+        uint256[] memory productIds = userProductIds[user];
+        Product[] memory purchasedProducts = new Product[](productIds.length);
+        
+        for (uint256 i = 0; i < productIds.length; i++) {
+            purchasedProducts[i] = userPurchases[user][productIds[i]];
+        }
+        
+        return purchasedProducts;
     }
 }

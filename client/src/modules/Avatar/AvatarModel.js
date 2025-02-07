@@ -62,7 +62,7 @@ export function MaleModel({
                 if (display) {
                     group.current.position.y = legOffset - 2.8
                 } else {
-                    group.current.position.y = legOffset
+                    group.current.position.y = 0
                 }
             }
         }
@@ -186,7 +186,7 @@ export function FemaleModel({
                 if (display) {
                     group.current.position.y = legOffset - 2.8
                 } else {
-                    group.current.position.y = legOffset - 0.3
+                    group.current.position.y = legOffset - 0.28
                 }
             }
         }

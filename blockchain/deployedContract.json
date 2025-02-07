@@ -1,6 +1,43 @@
 {
-  "address": "0xE2aABbFbF572bA133140d7e50195568287a497C1",
+  "address": "0x6b99cDB30b0c0B5f75acd95878A8c7710d67f304",
   "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "buyer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "productId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "price",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "paymentDate",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "quantity",
+          "type": "uint256"
+        }
+      ],
+      "name": "ProductPurchased",
+      "type": "event"
+    },
     {
       "anonymous": false,
       "inputs": [
@@ -25,6 +62,19 @@
       ],
       "name": "UserRegistered",
       "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "productId",
+          "type": "uint256"
+        }
+      ],
+      "name": "buyProduct",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
     },
     {
       "inputs": [],
@@ -66,39 +116,49 @@
     {
       "inputs": [
         {
-          "internalType": "string",
-          "name": "_email",
-          "type": "string"
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
         }
       ],
-      "name": "getUserByEmail",
+      "name": "getUserPurchases",
       "outputs": [
         {
           "components": [
             {
-              "internalType": "string",
-              "name": "name",
-              "type": "string"
-            },
-            {
-              "internalType": "string",
-              "name": "email",
-              "type": "string"
-            },
-            {
-              "internalType": "string",
-              "name": "password",
-              "type": "string"
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
             },
             {
               "internalType": "uint256",
-              "name": "created_at",
+              "name": "price",
               "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "payment_date",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "payment_address",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "quantity",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "status",
+              "type": "string"
             }
           ],
-          "internalType": "struct Auth.User",
+          "internalType": "struct Auth.Product[]",
           "name": "",
-          "type": "tuple"
+          "type": "tuple[]"
         }
       ],
       "stateMutability": "view",
@@ -126,6 +186,50 @@
     {
       "inputs": [
         {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "products",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "price",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "payment_date",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "payment_address",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "quantity",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "status",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "string",
           "name": "_name",
           "type": "string"
@@ -144,6 +248,79 @@
       "name": "registerUser",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "userProductIds",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "userPurchases",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "price",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "payment_date",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "payment_address",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "quantity",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "status",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     }
   ]

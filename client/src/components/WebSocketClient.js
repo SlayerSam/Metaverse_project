@@ -195,6 +195,27 @@ export const playerMovement = async (movementData) => {
     }
 };
 
+export const buyProduct = async (productId, price, quantity) => {
+    try {
+        const contract = await getContract();
+        const tx = await contract.buyProduct(productId, { value: price });
+        await tx.wait(); // Wait for the transaction to complete
+
+        const response = await emitEvent('buyProduct', {
+            productId,
+            buyer: await contract.getAddress(),
+            price,
+            quantity
+        });
+
+        return response;
+    } catch (error) {
+        console.error('Buy product error:', error);
+        throw error;
+    }
+};
+
+
 export const disconnectSocket = () => {
     if (socket) {
         socket.disconnect();
