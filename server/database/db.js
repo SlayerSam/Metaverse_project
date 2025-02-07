@@ -7,96 +7,65 @@ const roomsFile = path.resolve(__dirname, 'rooms.json');
 const avatarsFile = path.resolve(__dirname, 'avatars.json');
 const productsBuyedFile = path.resolve(__dirname, 'products_buyed.json');
 
-// In-memory objects
+// Function to ensure a JSON file exists
+function ensureFileExists(filePath, defaultData = {}) {
+    if (!fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, JSON.stringify(defaultData, null, 2), 'utf-8');
+    }
+}
+
+// Ensure all files exist
+ensureFileExists(usersFile, {});
+ensureFileExists(roomsFile, {});
+ensureFileExists(avatarsFile, {});
+ensureFileExists(productsBuyedFile, []);
+
+// Read JSON files
 let users = JSON.parse(fs.readFileSync(usersFile, 'utf-8'));
 let rooms = JSON.parse(fs.readFileSync(roomsFile, 'utf-8'));
 let avatars = JSON.parse(fs.readFileSync(avatarsFile, 'utf-8'));
 let productsBuyed = JSON.parse(fs.readFileSync(productsBuyedFile, 'utf-8'));
 
-// Function to load data from JSON files into in-memory objects
+// Function to reload data from files
 function loadData() {
-    if (fs.existsSync(usersFile)) {
-        users = JSON.parse(fs.readFileSync(usersFile, 'utf-8'));
-    }
-    if (fs.existsSync(roomsFile)) {
-        rooms = JSON.parse(fs.readFileSync(roomsFile, 'utf-8'));
-    }
-    if (fs.existsSync(avatarsFile)) {
-        avatars = JSON.parse(fs.readFileSync(avatarsFile, 'utf-8'));
-    }
-    if (fs.existsSync(productsBuyedFile)) {
-        productsBuyed = JSON.parse(fs.readFileSync(productsBuyedFile, 'utf-8'));
-    }
+    users = JSON.parse(fs.readFileSync(usersFile, 'utf-8'));
+    rooms = JSON.parse(fs.readFileSync(roomsFile, 'utf-8'));
+    avatars = JSON.parse(fs.readFileSync(avatarsFile, 'utf-8'));
+    productsBuyed = JSON.parse(fs.readFileSync(productsBuyedFile, 'utf-8'));
 }
 
-// Function to save data from in-memory objects to JSON files
+// Function to save data to a JSON file
 function saveData(filePath, data) {
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
 }
 
-// Proxies to automatically save data when objects are updated
-users = new Proxy(users, {
-    set(target, key, value) {
-        target[key] = value;
-        saveData(usersFile, target);
-        return true;
-    },
-    deleteProperty(target, key) {
-        delete target[key];
-        saveData(usersFile, target);
-        return true;
-    },
-});
-
-rooms = new Proxy(rooms, {
-    set(target, key, value) {
-        target[key] = value;
-        saveData(roomsFile, target);
-        return true;
-    },
-    deleteProperty(target, key) {
-        delete target[key];
-        saveData(roomsFile, target);
-        return true;
-    },
-    get(target, key) {
-        const value = target[key];
-        if (typeof value === 'object' && value !== null) {
-            return new Proxy(value, {
-                set(nestedTarget, nestedKey, nestedValue) {
-                    nestedTarget[nestedKey] = nestedValue;
-                    saveData(roomsFile, target);
-                    return true;
-                }
-            });
+// Create Proxies for automatic saving
+function createAutoSaveProxy(target, filePath) {
+    return new Proxy(target, {
+        set(obj, prop, value) {
+            obj[prop] = value;
+            saveData(filePath, obj);
+            return true;
+        },
+        deleteProperty(obj, prop) {
+            delete obj[prop];
+            saveData(filePath, obj);
+            return true;
+        },
+        get(obj, prop) {
+            const value = obj[prop];
+            if (typeof value === 'object' && value !== null) {
+                return createAutoSaveProxy(value, filePath); // Handle nested objects
+            }
+            return value;
         }
-        return value;
-    }
-});
+    });
+}
 
-avatars = new Proxy(avatars, {
-    set(target, key, value) {
-        target[key] = value;
-        saveData(avatarsFile, target);
-        return true;
-    },
-    deleteProperty(target, key) {
-        delete target[key];
-        saveData(avatarsFile, target);
-        return true;
-    },
-});
-productsBuyed = new Proxy(productsBuyed, {
-    set(target, key, value) {
-        target[key] = value;
-        saveData(productsBuyedFile, target);
-        return true;
-    },
-    deleteProperty(target, key) {
-        delete target[key];
-        saveData(productsBuyedFile, target);
-        return true;
-    },
-});
+// Wrap objects with proxies
+users = createAutoSaveProxy(users, usersFile);
+rooms = createAutoSaveProxy(rooms, roomsFile);
+avatars = createAutoSaveProxy(avatars, avatarsFile);
+productsBuyed = createAutoSaveProxy(productsBuyed, productsBuyedFile);
 
 module.exports = { users, rooms, avatars, productsBuyed, loadData };
