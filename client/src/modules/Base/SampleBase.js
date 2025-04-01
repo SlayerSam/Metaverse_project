@@ -132,6 +132,7 @@ export default function SampleBase() {
   const { scene: model1 } = useGLTF('/models/11.glb');
   const { scene: model2 } = useGLTF('/models/12.glb');
   const { scene: model3 } = useGLTF('/models/13.glb');
+  const { scene: model4 } = useGLTF('/models/14.glb');
 
   return (
     <group>
@@ -155,6 +156,7 @@ export default function SampleBase() {
       <primitive object={model1} position={[-6.4, 0, 0]} />
       <primitive object={model2} position={[0, 0, 0]} />
       <primitive object={model3} position={[6.5, 0, 0]} />
+      <primitive object={model4} position={[10, 0, 12]} />
 
       <ambientLight intensity={1.5} />
       <directionalLight position={[10, 20, 10]} intensity={1.5} />
@@ -167,3 +169,4 @@ export default function SampleBase() {
 useGLTF.preload('/models/11.glb');
 useGLTF.preload('/models/12.glb');
 useGLTF.preload('/models/13.glb');
+useGLTF.preload('/models/14.glb');
