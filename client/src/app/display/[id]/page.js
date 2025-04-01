@@ -71,7 +71,6 @@ export default function Page({ params }) {
         </>
     );
 }
-
 // "use client";
 // import ModelLoader from '@/components/ModelLoader';
 // import { Environment } from '@react-three/drei';
