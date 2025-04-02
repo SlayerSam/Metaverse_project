@@ -1,1 +1,10 @@
-{}
+[
+  {
+    "productId": 4,
+    "buyer": "0xD59089CD989d311a4a15789C5e2FF485cab43986",
+    "price": 1500,
+    "status": "Paid",
+    "quantity": 3,
+    "timestamp": 1743520298534
+  }
+]

@@ -106,13 +106,67 @@
 
 // useGLTF.preload('/models/base.glb')
 
-import { useGLTF } from '@react-three/drei'
-import React from 'react'
+'use client';
+import { useGLTF, Plane, Environment, useTexture } from '@react-three/drei';
+import * as THREE from 'three';
+import { useState } from 'react'; // Add this import
 
 export default function SampleBase() {
-    const { scene } = useGLTF('/models/base.glb')
-    return (
-        <primitive object={scene} />
-    )
+  // State for texture loading error
+  const [textureError, setTextureError] = useState(false);
+  
+  // Load floor texture with error handling
+  const floorTexture = useTexture(
+    '/textures/mall-floor.jpg',
+    (texture) => {
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(10, 10);
+    },
+    (error) => {
+      console.error('Texture loading failed:', error);
+      setTextureError(true);
+    }
+  );
+
+  // Load models
+  const { scene: model1 } = useGLTF('/models/11.glb');
+  const { scene: model2 } = useGLTF('/models/12.glb');
+  const { scene: model3 } = useGLTF('/models/13.glb');
+  const { scene: model4 } = useGLTF('/models/14.glb');
+
+  return (
+    <group>
+      {/* Floor */}
+      <Plane 
+        args={[100, 100]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -0.5, 0]}
+        receiveShadow
+      >
+        <meshStandardMaterial 
+          map={!textureError ? floorTexture : null}
+          color={textureError ? "#f0f0f0" : undefined}
+          roughness={0.3}
+          metalness={0.1}
+          side={THREE.DoubleSide}
+        />
+      </Plane>
+
+      {/* Rest of your component... */}
+      <primitive object={model1} position={[-6.4, 0, 0]} />
+      <primitive object={model2} position={[0, 0, 0]} />
+      <primitive object={model3} position={[6.5, 0, 0]} />
+      <primitive object={model4} position={[10, 0, 12]} />
+
+      <ambientLight intensity={1.5} />
+      <directionalLight position={[10, 20, 10]} intensity={1.5} />
+      <Environment preset="city" background />
+    </group>
+  );
 }
-useGLTF.preload('/models/base.glb')
+
+// Preload models
+useGLTF.preload('/models/11.glb');
+useGLTF.preload('/models/12.glb');
+useGLTF.preload('/models/13.glb');
+useGLTF.preload('/models/14.glb');
