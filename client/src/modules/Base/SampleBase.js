@@ -172,7 +172,7 @@ export default function SampleBase() {
   );
 }
 
-// Preload models
+// cPreload models
 useGLTF.preload('/models/11.glb');
 useGLTF.preload('/models/12.glb');
 useGLTF.preload('/models/13.glb');
