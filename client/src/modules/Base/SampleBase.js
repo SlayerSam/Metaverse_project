@@ -133,6 +133,10 @@ export default function SampleBase() {
   const { scene: model2 } = useGLTF('/models/12.glb');
   const { scene: model3 } = useGLTF('/models/13.glb');
   const { scene: model4 } = useGLTF('/models/14.glb');
+  const { scene: model5 } = useGLTF('/models/table601.glb');
+  const { scene: model6 } = useGLTF('/models/food24.glb');
+  const { scene: model7 } = useGLTF('/models/grass401.glb');
+  
 
   return (
     <group>
@@ -157,6 +161,9 @@ export default function SampleBase() {
       <primitive object={model2} position={[0, 0, 0]} />
       <primitive object={model3} position={[6.5, 0, 0]} />
       <primitive object={model4} position={[10, 0, 12]} />
+      <primitive object={model5} position={[-10, 0, 12]} />
+      <primitive object={model6} position={[-12, 0, 0]} />
+      <primitive object={model7} position={[-12, 0, 12]} />
 
       <ambientLight intensity={1.5} />
       <directionalLight position={[10, 20, 10]} intensity={1.5} />
@@ -165,8 +172,11 @@ export default function SampleBase() {
   );
 }
 
-// Preload models
+// cPreload models
 useGLTF.preload('/models/11.glb');
 useGLTF.preload('/models/12.glb');
 useGLTF.preload('/models/13.glb');
 useGLTF.preload('/models/14.glb');
+useGLTF.preload('/models/table601.glb');
+useGLTF.preload('/models/food24.glb');
+useGLTF.preload('/models/grass401.glb');
