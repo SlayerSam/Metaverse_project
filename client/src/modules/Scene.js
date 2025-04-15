@@ -189,7 +189,7 @@ export default function Scene({ isOpen, isFirstPerson, setOnNear, setProduct }) 
                                         pantColor={userAvatar.pantColor}
                                         shirtColor={userAvatar.shirtColor}
                                         shoesColor={userAvatar.shoesColor}
-                                        position={new THREE.Vector3(userAvatar.position.x, userAvatar.position.y, userAvatar.position.z)}
+                                        position={new THREE.Vector3(userAvatar.position?.x, userAvatar.position?.y, userAvatar.position?.z)}
                                         isJumping={userAvatar.isJumping}
                                         isMoving={userAvatar.isMoving}
                                         rotation={userAvatar.rotation}

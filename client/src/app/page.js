@@ -1,4 +1,5 @@
 'use client'
+import ChatRoom from '@/components/ChatRoom'
 import Navbar from '@/components/Navbar'
 import ProductCard from '@/components/ProductCard'
 import { ObstacleProvider } from '@/context/ObstacleContext'
@@ -16,6 +17,7 @@ export default function Page() {
         <Navbar setIsOpen={setIsOpen} isOpen={isOpen} setIsFirstPerson={setIsFirstPerson} />
         <ProductCard onNear={onNear} product={product} />
         <Scene isOpen={isOpen} setOnNear={setOnNear} isFirstPerson={isFirstPerson} setProduct={setProduct} />
+        <ChatRoom />
       </div>
     </ObstacleProvider>
   )
