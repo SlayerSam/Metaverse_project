@@ -1,142 +1,96 @@
 "use client";
-import ModelLoader from '@/components/ModelLoader';
-import { Environment } from '@react-three/drei';
-import { Canvas } from '@react-three/fiber';
-import { XR, createXRStore } from '@react-three/xr';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
+import { Canvas } from "@react-three/fiber";
+import { XR, ARButton, createXRStore } from "@react-three/xr";
+import { Environment, useGLTF } from "@react-three/drei";
+import * as tf from "@tensorflow/tfjs-core";
+import * as handpose from "@tensorflow-models/hand-pose-detection";
+import "@tensorflow/tfjs-backend-webgl";
 
-const store = createXRStore();
-
-export default function Page({ params }) {
-    const { id } = params;
-    const shirtModelRef = useRef();
-    const [red, setRed] = useState(false);
-    const [scaleFactor, setScaleFactor] = useState(0.5); // Initial scale value
+function WatchModel({ wristPosition }) {
+    const { scene } = useGLTF(
+        "https://res.cloudinary.com/dyw5oov8w/image/upload/v1736008486/gjmzqjdjg2gondyoyz6w.glb"
+    );
+    const ref = useRef();
 
     useEffect(() => {
-        // Request AR session with body tracking support
-        if (navigator.xr) {
-            navigator.xr.requestSession('immersive-ar', {
-                requiredFeatures: ['anchors', 'tracked-body-joints']
-            }).then((session) => {
-                session.addEventListener('selectstart', (event) => {
-                    setInterval(() => {
-                        const joint = event.frame.getJointPose('spine');
-                        if (joint && shirtModelRef.current) {
-                            attachShirtToJoint(joint.transform);
-                        }
-                    }, 100);
-                });
-            }).catch((error) => {
-                console.error('Failed to start AR session:', error);
+        const update = () => {
+            if (ref.current && wristPosition.current) {
+                const { x, y } = wristPosition.current;
+                ref.current.position.set(x, y, -2); // Push into scene
+            }
+        };
+        const interval = setInterval(update, 30);
+        return () => clearInterval(interval);
+    }, []);
+
+    return <primitive ref={ref} object={scene} scale={1.0} />;
+}
+
+export default function Page({ params }) {
+    const videoRef = useRef(null);
+    const wristPosition = useRef({ x: 0, y: 0 });
+    const store = createXRStore()
+    const [ready, setReady] = useState(false);
+
+    useEffect(() => {
+        async function init() {
+            await tf.setBackend("webgl");
+            const detector = await handpose.createDetector(
+                handpose.SupportedModels.MediaPipeHands,
+                {
+                    runtime: "tfjs",
+                    modelType: "lite",
+                }
+            );
+
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: "user" },
             });
-        } else {
-            console.warn('WebXR not supported on this device.');
+
+            videoRef.current.srcObject = stream;
+            await videoRef.current.play();
+
+            async function detect() {
+                if (!videoRef.current) return;
+
+                const hands = await detector.estimateHands(videoRef.current);
+                if (hands.length > 0) {
+                    const wrist = hands[0].keypoints.find((k) => k.name === "wrist");
+                    if (wrist) {
+                        const x = (wrist.x / videoRef.current.videoWidth) * 2 - 1;
+                        const y = -(wrist.y / videoRef.current.videoHeight) * 2 + 1;
+                        wristPosition.current = { x, y };
+                    }
+                }
+
+                requestAnimationFrame(detect);
+            }
+
+            detect();
+            setReady(true);
         }
 
-        function attachShirtToJoint(transform) {
-            // Set position and rotation of the shirt model
-            shirtModelRef.current.position.set(
-                transform.position.x,
-                transform.position.y,
-                transform.position.z
-            );
-            shirtModelRef.current.rotation.set(
-                transform.orientation.x,
-                transform.orientation.y,
-                transform.orientation.z
-            );
-
-            // Adjust scale dynamically (example using spine joint distance as a factor)
-            const spineDistance = Math.max(0.5, Math.min(1.0, transform.position.y)); // Customize this based on realistic distances
-            const dynamicScale = spineDistance * 0.5; // Adjust the scaling factor for better fit
-            shirtModelRef.current.scale.set(dynamicScale, dynamicScale, dynamicScale);
-        }
+        init();
     }, []);
 
     return (
         <>
+            <video
+                ref={videoRef}
+                style={{ display: "none" }}
+                playsInline
+                muted
+                autoPlay
+            />
             <button onClick={() => store.enterAR()}>Enter AR</button>
             <Canvas>
-                <Environment preset="park" />
                 <XR store={store}>
-                    <ModelLoader
-                        ref={shirtModelRef}
-                        modelPath={'https://res.cloudinary.com/dyw5oov8w/image/upload/v1736008486/gjmzqjdjg2gondyoyz6w.glb'}
-                        scale={scaleFactor} // Initial scale
-                        position={[0, 0, -2]}
-                    />
+                    <ambientLight />
+                    <Environment preset="sunset" />
+                    {ready && <WatchModel wristPosition={wristPosition} />}
                 </XR>
             </Canvas>
         </>
     );
 }
-// "use client";
-// import ModelLoader from '@/components/ModelLoader';
-// import { Environment } from '@react-three/drei';
-// import { Canvas } from '@react-three/fiber';
-// import { XR, useXRFrame } from '@react-three/xr';
-// import { useEffect, useRef, useState } from 'react';
-
-// export default function Page({ params }) {
-//     const { id } = params;
-//     const shirtModelRef = useRef();
-//     const [scaleFactor, setScaleFactor] = useState(0.5);
-//     const [xrSession, setXRSession] = useState(null);
-
-//     useEffect(() => {
-//         if (navigator.xr) {
-//             navigator.xr.requestSession('immersive-ar', {
-//                 requiredFeatures: ['tracked-body-joints']
-//             }).then((session) => {
-//                 setXRSession(session);
-//             }).catch((error) => {
-//                 console.error('Failed to start AR session:', error);
-//             });
-//         } else {
-//             console.warn('WebXR not supported on this device.');
-//         }
-//     }, []);
-
-//     // Function to attach the model to the tracked body joint
-//     useXRFrame((frame) => {
-//         if (!xrSession || !shirtModelRef.current) return;
-
-//         // Get reference to the XR body tracking feature
-//         const jointSpace = xrSession.inputSources[0]?.hand?.get('spine');
-
-//         if (jointSpace) {
-//             const jointPose = frame.getJointPose(jointSpace);
-
-//             if (jointPose) {
-//                 const { x, y, z } = jointPose.transform.position;
-//                 const { x: rx, y: ry, z: rz } = jointPose.transform.orientation;
-
-//                 // Attach shirt model to spine joint position
-//                 shirtModelRef.current.position.set(x, y, z);
-//                 shirtModelRef.current.rotation.set(rx, ry, rz);
-
-//                 // Dynamic scaling based on body size (example: distance between neck and spine)
-//                 const scale = Math.max(0.4, Math.min(1.2, y * 0.8));
-//                 shirtModelRef.current.scale.set(scale, scale, scale);
-//             }
-//         }
-//     });
-
-//     return (
-//         <>
-//             <button onClick={() => xrSession && xrSession.requestReferenceSpace('local')}>Enter AR</button>
-//             <Canvas>
-//                 <Environment preset="park" />
-//                 <XR>
-//                     <ModelLoader
-//                         ref={shirtModelRef}
-//                         modelPath={'https://res.cloudinary.com/dyw5oov8w/image/upload/v1736008486/gjmzqjdjg2gondyoyz6w.glb'}
-//                         scale={scaleFactor}
-//                         position={[0, 0, -2]}
-//                     />
-//                 </XR>
-//             </Canvas>
-//         </>
-//     );
-// }

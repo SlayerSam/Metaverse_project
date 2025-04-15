@@ -1,6 +1,7 @@
 'use client'
 import Navbar from '@/components/Navbar'
 import ProductCard from '@/components/ProductCard'
+import { ObstacleProvider } from '@/context/ObstacleContext'
 import Scene from '@/modules/Scene'
 import React, { useState } from 'react'
 
@@ -10,10 +11,12 @@ export default function Page() {
   const [onNear, setOnNear] = useState(false)
   const [product, setProduct] = useState({})
   return (
-    <div className='w-full h-screen relative'>
-      <Navbar setIsOpen={setIsOpen} isOpen={isOpen} setIsFirstPerson={setIsFirstPerson} />
-      <ProductCard onNear={onNear} product={product} />
-      <Scene isOpen={isOpen} setOnNear={setOnNear} isFirstPerson={isFirstPerson} setProduct={setProduct} />
-    </div>
+    <ObstacleProvider>
+      <div className='w-full h-screen relative'>
+        <Navbar setIsOpen={setIsOpen} isOpen={isOpen} setIsFirstPerson={setIsFirstPerson} />
+        <ProductCard onNear={onNear} product={product} />
+        <Scene isOpen={isOpen} setOnNear={setOnNear} isFirstPerson={isFirstPerson} setProduct={setProduct} />
+      </div>
+    </ObstacleProvider>
   )
 }

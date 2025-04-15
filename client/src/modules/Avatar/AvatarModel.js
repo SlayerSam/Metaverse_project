@@ -1,6 +1,17 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useFrame } from 'react-three-fiber';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useFrame, useThree } from 'react-three-fiber';
 import * as THREE from 'three';
+import { useLoader } from 'react-three-fiber';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { useGLTF } from '@react-three/drei';
+import { useSelector } from 'react-redux';
+
+function useShirtModel(url) {
+    if (url) {
+        const gltf = useGLTF(url);
+        return gltf;
+    }
+}
 
 export function MaleModel({
     group,
@@ -19,6 +30,12 @@ export function MaleModel({
     display = false,
     ...props
 }) {
+    const { shirtModelUrl: modelPath } = useSelector((state) => state.avatar.maleAvatar)
+    useEffect(() => {
+        useGLTF.preload(modelPath);
+    }, [modelPath]);
+    const shirtModel = useShirtModel(modelPath);
+
     const shirtMaterial = useMemo(() => {
         const newMaterial = materials.Ch42_Body.clone();
         newMaterial.color = new THREE.Color(shirtColor);
@@ -44,6 +61,36 @@ export function MaleModel({
         newMaterial.color = new THREE.Color(shoesColor);
         return newMaterial;
     }, [shoesColor, materials.Ch42_Sneakers]);
+
+    const shirtRef = useRef();
+
+    useEffect(() => {
+        if (!shirtModel?.scene || !nodes.mixamorigSpine) return;
+
+        const shirtClone = shirtModel.scene.clone();
+
+        // Optional tweaks: adjust the shirt’s position and scale to match the avatar
+        shirtClone.position.set(0, 0, 10);
+        shirtClone.scale.set(100, 100,100);
+        shirtClone.rotation.set(0, 0, 0);
+
+        // Attach to avatar spine
+        nodes.mixamorigSpine.add(shirtClone);
+        shirtRef.current = shirtClone;
+
+        return () => {
+            nodes.mixamorigSpine.remove(shirtClone);
+        };
+    }, [shirtModel, nodes]);
+
+
+    // Animation frame updates for fallback attachment
+    useFrame(() => {
+        if (shirtRef.current && nodes.mixamorigSpine) {
+            // shirtRef.current.position.copy(nodes.mixamorigSpine.position);
+            shirtRef.current.quaternion.copy(nodes.mixamorigSpine.quaternion);
+        }
+    });
 
     useFrame(() => {
         if (nodes && armWidth && armLength) {
@@ -96,13 +143,22 @@ export function MaleModel({
                     />
 
                     {/* Shirt */}
-                    <skinnedMesh
-                        name="Ch42_Shirt"
-                        geometry={nodes.Ch42_Shirt.geometry}
-                        material={shirtMaterial}  // Apply the new shirt material
-                        skeleton={nodes.Ch42_Shirt.skeleton}
-                        material-color={shirtColor}
-                    />
+                    {shirtModel ? (
+                        <primitive
+                            object={shirtModel.scene}
+                            material={shirtMaterial}
+                            position={nodes.Ch42_Shirt.position}
+                            rotation={nodes.Ch42_Shirt.rotation}
+                            scale={nodes.Ch42_Shirt.scale}
+                        />
+                    ) : (
+                        <skinnedMesh
+                            name="Ch42_Shirt"
+                            geometry={nodes.Ch42_Shirt.geometry}
+                            material={shirtMaterial}
+                            skeleton={nodes.Ch42_Shirt.skeleton}
+                        />
+                    )}
 
                     <skinnedMesh
                         name="Ch42_Shorts"

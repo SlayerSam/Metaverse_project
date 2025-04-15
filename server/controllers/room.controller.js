@@ -52,6 +52,7 @@ async function fetchRooms() {
 
 
 async function fetchRoomById(roomId) {
+    console.log(rooms)
     let roomData = rooms[roomId];
     if (!roomData) {
         throw new Error(`Room with ID ${roomId} not found`);

@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import { playerMovement } from '@/components/WebSocketClient';
 
 
-const MaleAvatar = ({ group, setIsMoving, isFirstPerson, isOpen, modelPath, avatar }) => {
+const MaleAvatar = ({ group, setIsMoving, isFirstPerson, isOpen, modelPath, avatar, checkCollisions }) => {
     useEffect(() => {
         useGLTF.preload(modelPath);
     }, [modelPath]);
@@ -68,24 +68,22 @@ const MaleAvatar = ({ group, setIsMoving, isFirstPerson, isOpen, modelPath, avat
     useFrame(() => {
         if (isOpen) return;
 
-        const direction = new THREE.Vector3();
         const headNode = nodes['mixamorigHead'];
-
+        const direction = new THREE.Vector3();
         group.current.getWorldDirection(direction);
         direction.y = 0;
         direction.normalize();
 
         let isMoving = false;
+        const moveVector = new THREE.Vector3();
 
         if (!isJumping) {
             if (keys['ArrowUp'] || keys['KeyW']) {
-                group.current.position.add(direction.clone().normalize().multiplyScalar(speed));
-                isMoving = true;
+                moveVector.add(direction.clone().multiplyScalar(speed));
             }
 
             if (keys['ArrowDown'] || keys['KeyS']) {
-                group.current.position.add(direction.clone().normalize().multiplyScalar(-speed));
-                isMoving = true;
+                moveVector.add(direction.clone().multiplyScalar(-speed));
             }
 
             if (keys['ArrowLeft'] || keys['KeyA']) {
@@ -98,6 +96,15 @@ const MaleAvatar = ({ group, setIsMoving, isFirstPerson, isOpen, modelPath, avat
                 isMoving = true;
             }
         }
+
+        const nextPosition = group.current.position.clone().add(moveVector);
+
+        // 💥 Only apply movement if no collision
+        if (!checkCollisions || !checkCollisions(nextPosition)) {
+            group.current.position.copy(nextPosition);
+            isMoving = moveVector.length() > 0;
+        }
+
 
         if (keys['Space'] && !isJumping) {
             setIsJumping(true);
@@ -134,8 +141,8 @@ const MaleAvatar = ({ group, setIsMoving, isFirstPerson, isOpen, modelPath, avat
                 movement({
                     roomId: user?.roomId,
                     userId: user?.id,
-                    position: group.current.position,
-                    rotation: group.current.rotation.y,
+                    position: group.current?.position,
+                    rotation: group.current?.rotation.y,
                     isJumping,
                     isMoving
                 })
@@ -161,7 +168,7 @@ const MaleAvatar = ({ group, setIsMoving, isFirstPerson, isOpen, modelPath, avat
     );
 }
 
-const FemaleAvatar = ({ group, setIsMoving, isFirstPerson, isOpen, modelPath, avatar }) => {
+const FemaleAvatar = ({ group, setIsMoving, isFirstPerson, isOpen, modelPath, avatar, checkCollisions }) => {
     useEffect(() => {
         useGLTF.preload(modelPath);
     }, [modelPath]);
@@ -221,24 +228,23 @@ const FemaleAvatar = ({ group, setIsMoving, isFirstPerson, isOpen, modelPath, av
     useFrame(() => {
         if (isOpen) return;
 
-        const direction = new THREE.Vector3();
-        const headNode = nodes['mixamorigHead'];
 
+        const headNode = nodes['mixamorigHead'];
+        const direction = new THREE.Vector3();
         group.current.getWorldDirection(direction);
         direction.y = 0;
         direction.normalize();
 
         let isMoving = false;
+        const moveVector = new THREE.Vector3();
 
         if (!isJumping) {
             if (keys['ArrowUp'] || keys['KeyW']) {
-                group.current.position.add(direction.clone().normalize().multiplyScalar(speed));
-                isMoving = true;
+                moveVector.add(direction.clone().multiplyScalar(speed));
             }
 
             if (keys['ArrowDown'] || keys['KeyS']) {
-                group.current.position.add(direction.clone().normalize().multiplyScalar(-speed));
-                isMoving = true;
+                moveVector.add(direction.clone().multiplyScalar(-speed));
             }
 
             if (keys['ArrowLeft'] || keys['KeyA']) {
@@ -250,6 +256,14 @@ const FemaleAvatar = ({ group, setIsMoving, isFirstPerson, isOpen, modelPath, av
                 group.current.rotation.y -= rotationSpeed;
                 isMoving = true;
             }
+        }
+
+        const nextPosition = group.current.position.clone().add(moveVector);
+
+        // 💥 Only apply movement if no collision
+        if (!checkCollisions || !checkCollisions(nextPosition)) {
+            group.current.position.copy(nextPosition);
+            isMoving = moveVector.length() > 0;
         }
 
         if (keys['Space'] && !isJumping) {
@@ -315,12 +329,12 @@ const FemaleAvatar = ({ group, setIsMoving, isFirstPerson, isOpen, modelPath, av
 }
 
 
-export function Avatar({ group, setIsMoving, isFirstPerson, isOpen, avatar }) {
+export function Avatar({ group, setIsMoving, isFirstPerson, isOpen, avatar, checkCollisions }) {
     if (avatar.gender == 'male') {
-        return <MaleAvatar group={group} setIsMoving={setIsMoving} isFirstPerson={isFirstPerson} isOpen={isOpen} avatar={avatar} modelPath='/models/Avatar.glb' />
+        return <MaleAvatar group={group} setIsMoving={setIsMoving} checkCollisions={checkCollisions} isFirstPerson={isFirstPerson} isOpen={isOpen} avatar={avatar} modelPath='/models/Avatar.glb' />
     }
     else {
-        return <FemaleAvatar group={group} setIsMoving={setIsMoving} isFirstPerson={isFirstPerson} isOpen={isOpen} avatar={avatar} modelPath='/models/Female.glb' />
+        return <FemaleAvatar group={group} setIsMoving={setIsMoving} checkCollisions={checkCollisions} isFirstPerson={isFirstPerson} isOpen={isOpen} avatar={avatar} modelPath='/models/Female.glb' />
     }
 
 }
