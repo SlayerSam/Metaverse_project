@@ -150,7 +150,6 @@ const MaleAvatar = ({ group, setIsMoving, isFirstPerson, isOpen, modelPath, avat
 
         setIsMoving(isMoving || isJumping);
     });
-    console.log(nodes)
 
     return (
         <MaleModel
