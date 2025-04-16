@@ -6,6 +6,7 @@ const usersFile = path.resolve(__dirname, 'users.json');
 const roomsFile = path.resolve(__dirname, 'rooms.json');
 const avatarsFile = path.resolve(__dirname, 'avatars.json');
 const productsBuyedFile = path.resolve(__dirname, 'products_buyed.json');
+const messagesFile = path.resolve(__dirname, 'messages.json')
 
 // Function to ensure a JSON file exists
 function ensureFileExists(filePath, defaultData = {}) {
@@ -18,12 +19,14 @@ function ensureFileExists(filePath, defaultData = {}) {
 ensureFileExists(usersFile, {});
 ensureFileExists(roomsFile, {});
 ensureFileExists(avatarsFile, {});
+ensureFileExists(messagesFile, {});
 ensureFileExists(productsBuyedFile, []);
 
 // Read JSON files
 let users = JSON.parse(fs.readFileSync(usersFile, 'utf-8'));
 let rooms = JSON.parse(fs.readFileSync(roomsFile, 'utf-8'));
 let avatars = JSON.parse(fs.readFileSync(avatarsFile, 'utf-8'));
+let messages = JSON.parse(fs.readFileSync(messagesFile, 'utf-8'));
 let productsBuyed = JSON.parse(fs.readFileSync(productsBuyedFile, 'utf-8'));
 
 // Function to reload data from files
@@ -31,6 +34,7 @@ function loadData() {
     users = JSON.parse(fs.readFileSync(usersFile, 'utf-8'));
     rooms = JSON.parse(fs.readFileSync(roomsFile, 'utf-8'));
     avatars = JSON.parse(fs.readFileSync(avatarsFile, 'utf-8'));
+    messages = JSON.parse(fs.readFileSync(messagesFile, 'utf-8'));
     productsBuyed = JSON.parse(fs.readFileSync(productsBuyedFile, 'utf-8'));
 }
 
@@ -43,19 +47,24 @@ function saveData(filePath, data) {
 function createAutoSaveProxy(target, filePath) {
     return new Proxy(target, {
         set(obj, prop, value) {
+            // If the value is an object, wrap it in a proxy first
+            if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                value = createAutoSaveProxy(value, filePath);
+            }
             obj[prop] = value;
-            saveData(filePath, obj);
+            saveData(filePath, target); // Save the entire root object
             return true;
         },
         deleteProperty(obj, prop) {
             delete obj[prop];
-            saveData(filePath, obj);
+            saveData(filePath, target); // Save the entire root object
             return true;
         },
         get(obj, prop) {
             const value = obj[prop];
-            if (typeof value === 'object' && value !== null) {
-                return createAutoSaveProxy(value, filePath); // Handle nested objects
+            // Only wrap plain objects, not arrays or null
+            if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                return createAutoSaveProxy(value, filePath);
             }
             return value;
         }
@@ -67,5 +76,6 @@ users = createAutoSaveProxy(users, usersFile);
 rooms = createAutoSaveProxy(rooms, roomsFile);
 avatars = createAutoSaveProxy(avatars, avatarsFile);
 productsBuyed = createAutoSaveProxy(productsBuyed, productsBuyedFile);
+messages = createAutoSaveProxy(messages, messagesFile)
 
-module.exports = { users, rooms, avatars, productsBuyed, loadData };
+module.exports = { users, rooms, avatars, productsBuyed, loadData, messages };

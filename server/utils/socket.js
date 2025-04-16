@@ -1,7 +1,7 @@
 const { buyProduct } = require("../controllers/product.controller");
-const { createRoom, fetchRooms, joinRoom, fetchRoomById } = require("../controllers/room.controller");
+const { createRoom, fetchRooms, joinRoom, fetchRoomById, sendMessage, getMessages } = require("../controllers/room.controller");
 const { avatarStore, positionUpdate, reConnectUser } = require('../controllers/user.controller');
-const { loadData, users } = require("../database/db");
+const { loadData, users, rooms } = require("../database/db");
 const { signup, login, logout } = require("./auth.utils");
 
 function initializeSocket(io) {
@@ -124,6 +124,29 @@ function initializeSocket(io) {
             catch (error) {
                 console.error('Error in buy product:', error);
                 sendResponse('error', { message: error.message }, requestId);
+            }
+        })
+
+        socket.on('sendRoomMessage', async ({ roomId, userId, message, requestId }) => {
+            try {
+                const result = await sendMessage(roomId, userId, socket.id, message)
+                socket.to(roomId).emit('sendRoomMessage', { action: 'sendRoomMessage', data: { username:result?.displayName, message }, requestId });
+                sendResponse('sendRoomMessage', { "success": true }, requestId)
+            }
+            catch (error) {
+                console.error("Error in send message in socket", error);
+                sendResponse('error', { message: error.message }, requestId)
+            }
+        })
+
+        socket.on('getMessages', async ({ roomId, requestId }) => {
+            try {
+                const messages = await getMessages(roomId)
+                sendResponse('getMessages', { messages }, requestId)
+            }
+            catch (error) {
+                console.error("Error in send message in socket", error);
+                sendResponse('error', { message: error.message }, requestId)
             }
         })
 

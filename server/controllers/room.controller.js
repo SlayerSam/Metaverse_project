@@ -1,4 +1,4 @@
-const { rooms, users, avatars } = require("../database/db");
+const { rooms, users, avatars, messages } = require("../database/db");
 const { useId } = require("../utils/db.utils");
 
 const MAX_ROOM_CAPACITY = 5;
@@ -7,8 +7,8 @@ async function createRoom() {
     try {
         const roomId = useId()
         if (rooms.length > 0) {
-            let flag = Object.entries(rooms).every(([key, val]) => val.capacity === 0);
-            if (flag) {
+            const allFull = Object.entries(rooms).every(([key, val]) => val.capacity === 0);
+            if (allFull) {
                 rooms[roomId] = {
                     id: roomId,
                     users: [],
@@ -43,6 +43,17 @@ const getUserById = (id) => {
     return val
 }
 
+
+const getRoomById = (id) => {
+    let val = null;
+    Object.entries(rooms).forEach((room, index) => {
+        if (room.id === id) {
+            val = room;
+        }
+    })
+    return val
+}
+
 async function fetchRooms() {
     let roomsArr = Object.entries(rooms).map(([key, val]) => {
         return val
@@ -53,7 +64,7 @@ async function fetchRooms() {
 
 async function fetchRoomById(roomId) {
     console.log(rooms)
-    let roomData = rooms[roomId];
+    let roomData = rooms[roomId] || getRoomById(roomId);
     if (!roomData) {
         throw new Error(`Room with ID ${roomId} not found`);
     }
@@ -92,9 +103,7 @@ async function deleteOldEmptyRooms(roomId) {
 async function joinRoom(roomId, userId, socketId) {
     try {
         await deleteOldEmptyRooms(roomId);
-        console.log(roomId)
         users[socketId].roomId = roomId;
-        console.log(rooms[roomId].users);
         if (!rooms[roomId].users.includes(userId)) {
             rooms[roomId].users = [...rooms[roomId].users, userId];
             rooms[roomId].capacity -= 1;
@@ -105,6 +114,26 @@ async function joinRoom(roomId, userId, socketId) {
     }
 }
 
+async function sendMessage(roomId, userId, socketId, message) {
+    try {
+        if (!messages[roomId]) {
+            messages[roomId] = []
+        }
+        messages[roomId].push({
+            user: userId,
+            username: getUserById(userId)?.displayName,
+            message
+        })
+        return getUserById(userId)
+    }
+    catch (error) {
+        console.error('Error sending message', error);
+        throw error
+    }
+}
 
+async function getMessages(roomId) {
+    return messages[roomId]
+}
 
-module.exports = { createRoom, joinRoom, fetchRooms, fetchRoomById };
+module.exports = { createRoom, joinRoom, fetchRooms, fetchRoomById, sendMessage, getMessages };

@@ -3,6 +3,7 @@
         "database/users.json",
         "database/rooms.json",
         "database/avatars.json",
-        "database/products_buyed.json"
+        "database/products_buyed.json",
+        "database/messages.json"
     ]
 }

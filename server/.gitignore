@@ -40,3 +40,4 @@ next-env.d.ts
 database/users.json
 database/rooms.json
 database/avatars.json
+database/messages.json

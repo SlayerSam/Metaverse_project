@@ -115,7 +115,7 @@ export const login = async (loginData) => {
     try {
         const contract = await getContract();
         const user = await contract.getUserByEmail(email);
-        if (user.created_at > 0) {
+        if (user) {
             const valid = await compare(password, user.password);
             if (valid) {
                 loginData.password = user.password;
@@ -226,7 +226,7 @@ export const buyProduct = async (productId, price, quantity, setIsLoading, setBt
 
 export const sendMessage = async (userId, roomId, message) => {
     try {
-        const response = await emitEvent('sendRoomMessage', {
+        const response = await NoReturnEmitEvent('sendRoomMessage', {
             userId, roomId, message
         });
         return response

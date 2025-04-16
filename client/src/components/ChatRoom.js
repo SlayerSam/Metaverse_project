@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronUp, ChevronDown, MessageCircle } from 'lucide-react'
-import { getMessages, sendMessage } from './WebSocketClient'
+import { getMessages, getSocket, sendMessage } from './WebSocketClient'
 import { useSelector } from 'react-redux'
 
 const getColorFromName = (name) => {
@@ -39,6 +39,19 @@ export default function ChatRoom() {
             console.error('Failed to get messages and users:', error)
         }
     }
+
+    useEffect(() => {
+        const socket = getSocket();
+        socket.on('sendRoomMessage', ({ data }) => {
+            setMessages([...messages, { user: data.username, text: data.message }])
+            if (!users.includes(data.username)) {
+                setUsers((state) => [
+                    ...state,
+                    data.username
+                ])
+            }
+        })
+    }, [])
 
     useEffect(() => {
         if (user?.authenticated)

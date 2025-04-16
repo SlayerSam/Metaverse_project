@@ -1,5 +1,5 @@
 {
-  "address": "0xf52aefc6B51e7F34ba8783be216fF4D454cC26B4",
+  "address": "0x039334E9B6A52f129fa4886148b04c0a2d80c550",
   "abi": [
     {
       "anonymous": false,
@@ -98,6 +98,30 @@
         }
       ],
       "name": "getUser",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_email",
+          "type": "string"
+        }
+      ],
+      "name": "getUserByEmail",
       "outputs": [
         {
           "internalType": "string",
