@@ -3,7 +3,6 @@ const { useId } = require("../utils/db.utils");
 
 async function avatarStore(data, socketId) {
     try {
-        console.log(socketId, data)
         const avtarId = useId()
         avatars[avtarId] = data;
         users[socketId].avatar = avtarId;
@@ -31,10 +30,14 @@ async function reConnectUser(userId, socketId) {
     try {
         if (!users[socketId]) {
             Object.entries(users).forEach(([key, val], index) => {
+                console.log('reconnect', key)
+                console.log('reconnect', val)
                 if (val.id === userId) {
                     users[socketId] = val
+                    console.log(rooms[val.roomId].users.includes(userId))
                     if (!rooms[val.roomId].users.includes(userId))
                         rooms[val.roomId].users = [...rooms[val.roomId].users, userId];
+                    console.log('reconnect',rooms)
                     avatars[users[socketId].avatar].isMoving = false;
                     avatars[users[socketId].avatar].isJumping = false;
                     delete users[key]
