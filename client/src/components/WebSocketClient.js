@@ -116,9 +116,11 @@ export const login = async (loginData) => {
         const contract = await getContract();
         const user = await contract.getUserByEmail(email);
         if (user) {
-            const valid = await compare(password, user.password);
+           // console.log(user[0]);
+            const valid = await compare(password, user[2]);
+        
             if (valid) {
-                loginData.password = user.password;
+                loginData.password = user[2];
                 const response = await emitEvent('login', { userData: loginData });
                 return { response, address: (await getContract()).getAddress(), err: '' };
             } else {
