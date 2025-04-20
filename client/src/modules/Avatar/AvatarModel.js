@@ -30,6 +30,7 @@ export function MaleModel({
     display = false,
     ...props
 }) {
+    const { scene } = useThree()
     const { shirtModelUrl: modelPath } = useSelector((state) => state.avatar.maleAvatar)
     useEffect(() => {
         useGLTF.preload(modelPath);
@@ -65,32 +66,50 @@ export function MaleModel({
     const shirtRef = useRef();
 
     useEffect(() => {
-        if (!shirtModel?.scene || !nodes.mixamorigSpine) return;
+        if (modelPath == '') {
+            nodes.mixamorigSpine.add(nodes.Ch42_Shirt);
+            nodes.Ch42_Shirt.visible = true;
+        }
+        if (!shirtModel?.scene || !nodes?.mixamorigSpine) return;
 
-        const shirtClone = shirtModel.scene.clone();
+        const shirtClone = shirtModel.scene.clone(true);
+        let shirtMesh;
 
-        // Optional tweaks: adjust the shirt’s position and scale to match the avatar
-        shirtClone.position.set(0, 0, 10);
-        shirtClone.scale.set(100, 100,100);
-        shirtClone.rotation.set(0, 0, 0);
+        shirtClone.traverse((child) => {
+            if (child.isSkinnedMesh) {
+                shirtMesh = child.clone();
+                child.skeleton = nodes.Ch42_Body1.skeleton;
+                child.bind(nodes.Ch42_Body1.skeleton)
+                // child.frustumCulled = false;
+                child.castShadow = true;
+                child.receiveShadow = true;
+            }
+        });
 
-        // Attach to avatar spine
-        nodes.mixamorigSpine.add(shirtClone);
-        shirtRef.current = shirtClone;
+        if (!shirtMesh) return;
+
+        if (nodes.Ch42_Shirt) {
+            nodes.Ch42_Shirt.visible = false;
+        }
+        shirtMesh.position.set(0, 0, 0);
+        shirtMesh.rotation.set(0, 0, 0);
+        shirtMesh.scale.set(1, 1, 1);
+        shirtMesh.bind(nodes.Ch42_Body1.skeleton);
+
+        if (nodes && nodes.mixamorigSpine && nodes.Ch42_Shirt) {
+            group.current?.getObjectByName("Ch42_Shirt")?.removeFromParent();
+        }
+        shirtRef.current = shirtMesh;
+        const timeout = setTimeout(() => {
+            nodes.mixamorigSpine.add(shirtMesh);
+        }, 700);
 
         return () => {
-            nodes.mixamorigSpine.remove(shirtClone);
+            clearTimeout(timeout);
+            nodes.mixamorigSpine.remove(shirtMesh);
         };
-    }, [shirtModel, nodes]);
 
-
-    // Animation frame updates for fallback attachment
-    useFrame(() => {
-        if (shirtRef.current && nodes.mixamorigSpine) {
-            // shirtRef.current.position.copy(nodes.mixamorigSpine.position);
-            shirtRef.current.quaternion.copy(nodes.mixamorigSpine.quaternion);
-        }
-    });
+    }, [shirtModel, nodes, shirtMaterial]);
 
     useFrame(() => {
         if (nodes && armWidth && armLength) {
@@ -142,23 +161,13 @@ export function MaleModel({
                         material-color={hairColor}
                     />
 
-                    {/* Shirt */}
-                    {shirtModel ? (
-                        <primitive
-                            object={shirtModel.scene}
-                            material={shirtMaterial}
-                            position={nodes.Ch42_Shirt.position}
-                            rotation={nodes.Ch42_Shirt.rotation}
-                            scale={nodes.Ch42_Shirt.scale}
-                        />
-                    ) : (
-                        <skinnedMesh
-                            name="Ch42_Shirt"
-                            geometry={nodes.Ch42_Shirt.geometry}
-                            material={shirtMaterial}
-                            skeleton={nodes.Ch42_Shirt.skeleton}
-                        />
-                    )}
+                    <skinnedMesh
+                        name="Ch42_Shirt"
+                        geometry={nodes.Ch42_Shirt.geometry}
+                        material={shirtMaterial}
+                        skeleton={nodes.Ch42_Shirt.skeleton}
+                    />
+                    {/* )} */}
 
                     <skinnedMesh
                         name="Ch42_Shorts"
@@ -182,6 +191,7 @@ export function MaleModel({
         </group>
     )
 }
+
 export function FemaleModel({
     group,
     nodes,

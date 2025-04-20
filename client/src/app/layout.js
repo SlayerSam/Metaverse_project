@@ -17,8 +17,6 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <head />
-      <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-      <script>eruda.init();</script>
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased select-none",
