@@ -31,7 +31,7 @@ export default function Scene({ isOpen, isFirstPerson, setOnNear, setProduct }) 
             "id": 6,
             "title": "HrX Gree Hoddie",
             "description": "product info something",
-            "model": "https://res.cloudinary.com/dyexgwzsb/image/upload/v1743413460/v24jkcqsojzbg2qqsxhl.glb",
+            "model": "/models/a.glb",
             "images": [
                 "https://res.cloudinary.com/dyexgwzsb/image/upload/v1743413643/jzdw4dzf64kawawuhpbc.png",
                 "https://res.cloudinary.com/dyexgwzsb/image/upload/v1743413642/tzebybwm3bxnpjfjs3ax.png",
