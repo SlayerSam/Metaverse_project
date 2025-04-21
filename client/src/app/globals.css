@@ -67,3 +67,14 @@
     @apply bg-background text-foreground;
   }
 }
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.bg-futuristic {
+  background: linear-gradient(135deg, #1a004e, #440b8f, #00c3ff);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}

@@ -3,13 +3,14 @@ import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Float, Environment, Sparkles } from '@react-three/drei'
 import { Suspense, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 function Scene() {
   return (
     <>
       <Environment preset="city" />
       <Sparkles count={100} scale={10} size={2} speed={0.5} />
-      
+
       <group position={[0, -2, 0]}>
         {/* Mall Building */}
         <Float floatIntensity={2} speed={2}>
@@ -46,6 +47,7 @@ function Scene() {
 }
 
 export default function Home() {
+  const router = useRouter()
   const [hovering, setHovering] = useState(false)
 
   return (
@@ -64,15 +66,16 @@ export default function Home() {
       {/* Overlay UI */}
       <div className="absolute top-0 left-0 w-full">
         <nav className="flex items-center justify-between px-6 py-4">
-          <div className="text-2xl font-bold text-white">MetaBaazaar</div>
+          <div className="text-2xl font-bold text-white">MetaBazaar</div>
           <div className="space-x-6">
             <Link href="/" className="text-white hover:text-gray-300">Home</Link>
             <Link href="/about" className="text-white hover:text-gray-300">About</Link>
             <Link href="/main" className="inline-block">
-              <button 
+              <button
                 className="bg-white/10 backdrop-blur-md text-white px-4 py-2 rounded-lg font-semibold hover:bg-white/20 transition-all border border-white/20"
                 onMouseEnter={() => setHovering(true)}
                 onMouseLeave={() => setHovering(false)}
+                onClick={() => router.push('/play')}
               >
                 Enter Metaverse
               </button>
@@ -94,10 +97,11 @@ export default function Home() {
           Step into a revolutionary 3D shopping experience where the digital and physical worlds converge.
         </p>
         <Link href="/main">
-          <button 
+          <button
             className={`bg-white/10 backdrop-blur-md text-white px-8 py-4 rounded-full font-semibold 
               border border-white/20 transition-all duration-300
               ${hovering ? 'bg-white/20 scale-105' : 'hover:bg-white/20 hover:scale-105'}`}
+            onClick={() => router.push('/play')}
           >
             Enter Metaverse
           </button>
