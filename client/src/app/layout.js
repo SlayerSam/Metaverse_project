@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 import { ThemeProvider } from "next-themes"
 import { Toaster } from "sonner"
 import dynamic from "next/dynamic"
+import ClientLayout from "@/components/ClientLayout"
 
 const ReduxProvider = dynamic(() => import('@/redux/redux-provider'), { ssr: false })
 
@@ -31,7 +32,9 @@ export default function RootLayout({ children }) {
             disableTransitionOnChange
           >
             <Toaster richColors position="top-right" />
-            {children}
+            <ClientLayout>
+              {children}
+            </ClientLayout>
           </ThemeProvider>
         </ReduxProvider>
       </body>

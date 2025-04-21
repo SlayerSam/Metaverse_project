@@ -34,10 +34,11 @@ async function reConnectUser(userId, socketId) {
                 console.log('reconnect', val)
                 if (val.id === userId) {
                     users[socketId] = val
-                    console.log(rooms[val.roomId].users.includes(userId))
+                    console.log(rooms[val.roomId])
+                    console.log(rooms[val.roomId], rooms[val.roomId].users.includes(userId))
                     if (!rooms[val.roomId].users.includes(userId))
                         rooms[val.roomId].users = [...rooms[val.roomId].users, userId];
-                    console.log('reconnect',rooms)
+                    console.log('reconnect', rooms)
                     avatars[users[socketId].avatar].isMoving = false;
                     avatars[users[socketId].avatar].isJumping = false;
                     delete users[key]

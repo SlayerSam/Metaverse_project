@@ -1,3 +1,4 @@
+'use client'
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useThree } from 'react-three-fiber';
 import * as THREE from 'three';
@@ -30,7 +31,6 @@ export function MaleModel({
     display = false,
     ...props
 }) {
-    const { scene } = useThree()
     const { shirtModelUrl: modelPath } = useSelector((state) => state.avatar.maleAvatar)
     useEffect(() => {
         useGLTF.preload(modelPath);
@@ -80,9 +80,6 @@ export function MaleModel({
                 shirtMesh = child.clone();
                 child.skeleton = nodes.Ch42_Body1.skeleton;
                 child.bind(nodes.Ch42_Body1.skeleton)
-                // child.frustumCulled = false;
-                child.castShadow = true;
-                child.receiveShadow = true;
             }
         });
 
@@ -91,21 +88,15 @@ export function MaleModel({
         if (nodes.Ch42_Shirt) {
             nodes.Ch42_Shirt.visible = false;
         }
-        shirtMesh.position.set(0, 0, 0);
-        shirtMesh.rotation.set(0, 0, 0);
-        shirtMesh.scale.set(1, 1, 1);
         shirtMesh.bind(nodes.Ch42_Body1.skeleton);
 
         if (nodes && nodes.mixamorigSpine && nodes.Ch42_Shirt) {
             group.current?.getObjectByName("Ch42_Shirt")?.removeFromParent();
         }
         shirtRef.current = shirtMesh;
-        const timeout = setTimeout(() => {
-            nodes.mixamorigSpine.add(shirtMesh);
-        }, 700);
+        nodes.mixamorigSpine.add(shirtMesh);
 
         return () => {
-            clearTimeout(timeout);
             nodes.mixamorigSpine.remove(shirtMesh);
         };
 
@@ -127,7 +118,8 @@ export function MaleModel({
                 nodes['mixamorigRightUpLeg'].scale.set(legWidth, legLength, legWidth);
                 if (display) {
                     group.current.position.y = legOffset - 2.8
-                } else {
+                }
+                else {
                     group.current.position.y = 0
                 }
             }
@@ -167,7 +159,6 @@ export function MaleModel({
                         material={shirtMaterial}
                         skeleton={nodes.Ch42_Shirt.skeleton}
                     />
-                    {/* )} */}
 
                     <skinnedMesh
                         name="Ch42_Shorts"
