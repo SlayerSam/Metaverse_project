@@ -1,0 +1,78 @@
+[
+  {
+    "id": 6,
+    "title": "HrX Gree Hoddie",
+    "description": "product info something",
+    "model": "/models/a.glb",
+    "image": "https://res.cloudinary.com/dyexgwzsb/image/upload/v1743413643/jzdw4dzf64kawawuhpbc.png",
+    "category": "shirt",
+    "gender": "male",
+    "price": 2499
+  },
+  {
+    "id": 7,
+    "title": "Gucci Men Leather Shoes",
+    "description": "product info something",
+    "model1": "https://res.cloudinary.com/dyexgwzsb/image/upload/v1743416260/cpyihatyvbgeosbycqd4.glb",
+    "model": "/models/a.glb",
+    "image": "https://res.cloudinary.com/dyexgwzsb/image/upload/v1743416369/lifw6ilosqzj7yrasdhu.pngh",
+    "category": "shoes",
+    "gender": "male",
+    "price": 8999
+  },
+  {
+    "id": 8,
+    "title": "Gucci Mens Leather Jacket",
+    "description": "product info something",
+    "model1": "https://res.cloudinary.com/dyexgwzsb/image/upload/v1743418428/w5k2v5dtb5i8jrpscaj5.glb",
+    "model": "",
+    "image": "https://res.cloudinary.com/dyexgwzsb/image/upload/v1743418512/kria9wcptpasrucqmrql.png",
+    "category": "shirt",
+    "gender": "male",
+    "price": 12999
+  },
+  {
+    "id": 9,
+    "title": "Leather Jacket",
+    "description": "An Exclusive Leather Jacket made",
+    "model1": "https://res.cloudinary.com/dajyh1fci/image/upload/v1743421271/kziqecc9qo9wzz3yeb3x.glb",
+    "model": "/models/a.glb",
+    "image": "https://res.cloudinary.com/dajyh1fci/image/upload/v1743419929/bmfo8qq3kt8tmvlfodmd.png",
+    "category": "shirt",
+    "gender": "male",
+    "price": 7499
+  },
+  {
+    "id": 10,
+    "title": "Womens Leather Jacket",
+    "description": "product info something",
+    "model1": "https://res.cloudinary.com/dyexgwzsb/image/upload/v1743434325/xjmjjyb2nhb4gcgxco92.glb",
+    "model": "/models/a.glb",
+    "image": "https://res.cloudinary.com/dyexgwzsb/image/upload/v1743434449/unz9llntb3hmhxurnaqi.png",
+    "category": "shirt",
+    "gender": "male",
+    "price": 5999
+  },
+  {
+    "id": 11,
+    "title": "Full Sail University Jacket",
+    "description": "The moodern day stylish jacket for the cool dudes",
+    "model1": "https://res.cloudinary.com/dajyh1fci/image/upload/v1743436138/htwycrfrahezaduaqslo.glb",
+    "model": "/models/a.glb",
+    "image": "https://res.cloudinary.com/dajyh1fci/image/upload/v1743436186/atsbce5i0zniiac2dn5r.png",
+    "category": "shirt",
+    "gender": "male",
+    "price": 5299
+  },
+  {
+    "id": 12,
+    "title": "Tommy Hilfiger Jacket",
+    "description": "This limited edition jacket seems just the product made for you, but cool, be cool",
+    "model1": "https://res.cloudinary.com/dajyh1fci/image/upload/v1743434557/fyn3dc21zmbfkk9pd2i7.glb",
+    "model": "/models/a.glb",
+    "image": "https://res.cloudinary.com/dajyh1fci/image/upload/v1743434577/xbgtvu7uepeeakdjv2ez.png",
+    "category": "shirt",
+    "gender": "male",
+    "price": 8499
+  }
+]

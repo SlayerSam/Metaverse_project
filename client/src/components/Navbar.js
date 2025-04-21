@@ -14,7 +14,6 @@ export default function Navbar({ setIsOpen, setIsFirstPerson, isOpen }) {
     const { user } = useSelector((state) => state.user)
     const cartItems = useSelector(state => state.cart.items);
     const dispatch = useDispatch()
-    console.log(user)
     const signOutUser = async () => {
         try {
             if (user?.roomId) {

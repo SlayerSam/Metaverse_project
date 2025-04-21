@@ -9,10 +9,11 @@ const userSlice = createSlice({
   initialState: userInitialState,
   reducers: {
     setUser: (state, action) => {
-      console.log(state , action)
       state.user = action.payload;
       setLoginCookie();
-      console.log("userSlice", state.user);
+    },
+    setAvatar: (state, action) => {
+      state.avatar = action.payload;
     },
     resetUser: (state) => {
       state.user = null;
@@ -21,7 +22,7 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUser, resetUser } = userSlice.actions;
+export const { setUser, resetUser, setAvatar } = userSlice.actions;
 export const isLoggedIn = (state) => state.user.authenticated;
 
 export default userSlice.reducer;

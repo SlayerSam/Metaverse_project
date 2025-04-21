@@ -66,7 +66,7 @@ export default function ChatRoom() {
     }
 
     return (
-        <div className="fixed bottom-0 right-0 z-50 w-full max-w-lg">
+        <div className="fixed bottom-0 right-0 z-30 w-full max-w-lg">
             <div className="flex justify-end pr-2 pb-1">
                 <Button
                     variant="ghost"
