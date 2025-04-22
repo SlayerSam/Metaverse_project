@@ -66,42 +66,52 @@ export function MaleModel({
     const shirtRef = useRef();
 
     useEffect(() => {
-        if (modelPath == '') {
+        if (modelPath === '') {
             nodes.mixamorigSpine.add(nodes.Ch42_Shirt);
             nodes.Ch42_Shirt.visible = true;
         }
         if (!shirtModel?.scene || !nodes?.mixamorigSpine) return;
-
+    
         const shirtClone = shirtModel.scene.clone(true);
         let shirtMesh;
-
+    
         shirtClone.traverse((child) => {
             if (child.isSkinnedMesh) {
                 shirtMesh = child.clone();
+    
+                // Bind skeleton
                 child.skeleton = nodes.Ch42_Body1.skeleton;
-                child.bind(nodes.Ch42_Body1.skeleton)
+                child.bind(nodes.Ch42_Body1.skeleton);
+    
+                // Assign a random color to the shirt's material
+                if (child.material) {
+                    child.material = child.material.clone(); // ensure no shared material
+                    child.material.color.setHex(Math.random() * 0xffffff);
+                }
             }
         });
-
+    
         if (!shirtMesh) return;
-
+    
         if (nodes.Ch42_Shirt) {
             nodes.Ch42_Shirt.visible = false;
         }
         shirtMesh.bind(nodes.Ch42_Body1.skeleton);
-
+    
+        // Remove old shirt
         if (nodes && nodes.mixamorigSpine && nodes.Ch42_Shirt) {
             group.current?.getObjectByName("Ch42_Shirt")?.removeFromParent();
         }
+    
         shirtRef.current = shirtMesh;
         nodes.mixamorigSpine.add(shirtMesh);
-
+    
         return () => {
             nodes.mixamorigSpine.remove(shirtMesh);
         };
-
+    
     }, [shirtModel, nodes, shirtMaterial]);
-
+    
     useFrame(() => {
         if (nodes && armWidth && armLength) {
             if (nodes['mixamorigLeftArm']) {
