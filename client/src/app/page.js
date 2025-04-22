@@ -3,7 +3,6 @@ import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Float, Environment, Sparkles } from '@react-three/drei'
 import { Suspense, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 
 function Scene() {
   return (
@@ -47,7 +46,6 @@ function Scene() {
 }
 
 export default function Home() {
-  const router = useRouter()
   const [hovering, setHovering] = useState(false)
 
   return (
@@ -70,12 +68,11 @@ export default function Home() {
           <div className="space-x-6">
             <Link href="/" className="text-white hover:text-gray-300">Home</Link>
             <Link href="/about" className="text-white hover:text-gray-300">About</Link>
-            <Link href="/main" className="inline-block">
+            <Link href="/play" className="inline-block">
               <button
                 className="bg-white/10 backdrop-blur-md text-white px-4 py-2 rounded-lg font-semibold hover:bg-white/20 transition-all border border-white/20"
                 onMouseEnter={() => setHovering(true)}
                 onMouseLeave={() => setHovering(false)}
-                onClick={() => router.push('/play')}
               >
                 Enter Metaverse
               </button>
@@ -96,12 +93,11 @@ export default function Home() {
         <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl">
           Step into a revolutionary 3D shopping experience where the digital and physical worlds converge.
         </p>
-        <Link href="/main">
+        <Link href="/play">
           <button
             className={`bg-white/10 backdrop-blur-md text-white px-8 py-4 rounded-full font-semibold 
               border border-white/20 transition-all duration-300
               ${hovering ? 'bg-white/20 scale-105' : 'hover:bg-white/20 hover:scale-105'}`}
-            onClick={() => router.push('/play')}
           >
             Enter Metaverse
           </button>
